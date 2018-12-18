@@ -209,12 +209,12 @@ jobs:
     - get: version
     - get: cf-mysql-ci
   - task: gate-on-stemcells
-    file: cf-mysql-ci/ci/tasks/create-and-compile-release/gate-on-stemcells.yml
+    file: cf-mysql-ci/ci/tasks/gate-on-stemcells/task.yml
   - task: gate-on-xenial-stemcells
     input_mapping:
       gcp-bosh-stemcell: xenial-gcp-bosh-stemcell
       bosh-lite-stemcell: xenial-bosh-lite-stemcell
-    file: cf-mysql-ci/ci/tasks/create-and-compile-release/gate-on-stemcells.yml
+    file: cf-mysql-ci/ci/tasks/gate-on-stemcells/task.yml
 #  - put: version
 #    params:
 #      pre: rc
@@ -1386,7 +1386,7 @@ jobs:
     - get: bpm-release
   - task: gate-on-stemcells
     input_mapping: {bosh-lite-stemcell: stemcell}
-    file: cf-mysql-ci/ci/tasks/create-and-compile-release/gate-on-stemcells.yml
+    file: cf-mysql-ci/ci/tasks/gate-on-stemcells/task.yml
   - aggregate:
     - do:
       - task: create-release
