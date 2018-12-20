@@ -9,6 +9,6 @@ params:
   BOSH_CA_CERT:
   ENV_TARGET_FILE:
 run:
-  path: cf-mysql-ci/ci/tasks/delete_deployment_no_env_metadata/task.sh
+  path: cf-mysql-ci/ci/tasks/delete-deployment-no-env-metadata/task.sh
 
 platform: linux

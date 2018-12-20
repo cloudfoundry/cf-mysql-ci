@@ -471,20 +471,12 @@ jobs:
         run:
           path: cf-mysql-ci/scripts/bosh/run_errand_gcp
   - task: delete-deployment
-    config:
-      platform: linux
-      image_resource: *image_resource
-      inputs:
-      - name: cf-mysql-ci
-      - name: full-bosh-environment
-      - name: deployments-configuration
-      params:
-        ENV_REPO: deployments-configuration
-        ENV_TARGET_FILE: full-bosh-environment/name
-        ENV_METADATA: full-bosh-environment/metadata
-        BOSH_DEPLOYMENT: cf-mysql
-      run:
-        path: cf-mysql-ci/scripts/bosh/delete_deployment_gcp
+    file: cf-mysql-ci/ci/tasks/delete-deployment/task.yml
+    params:
+      ENV_REPO: deployments-configuration
+      ENV_TARGET_FILE: full-bosh-environment/name
+      ENV_METADATA: full-bosh-environment/metadata
+      BOSH_DEPLOYMENT: cf-mysql
   - task: create-cf-mysql-vars
     input_mapping:
       deployments-core-services: deployments-configuration
@@ -587,20 +579,12 @@ jobs:
         run:
           path: cf-mysql-ci/scripts/bosh/run_errand_gcp
   - task: delete-deployment
-    config:
-      platform: linux
-      image_resource: *image_resource
-      inputs:
-      - name: cf-mysql-ci
-      - name: full-bosh-environment
-      - name: deployments-configuration
-      params:
-        ENV_REPO: deployments-configuration
-        ENV_TARGET_FILE: full-bosh-environment/name
-        ENV_METADATA: full-bosh-environment/metadata
-        BOSH_DEPLOYMENT: cf-mysql
-      run:
-        path: cf-mysql-ci/scripts/bosh/delete_deployment_gcp
+    file: cf-mysql-ci/ci/tasks/delete-deployment/task.yml
+    params:
+      ENV_REPO: deployments-configuration
+      ENV_TARGET_FILE: full-bosh-environment/name
+      ENV_METADATA: full-bosh-environment/metadata
+      BOSH_DEPLOYMENT: cf-mysql
   - put: full-bosh-environment
     params:
       release: full-bosh-environment
@@ -696,20 +680,13 @@ jobs:
   - &ondemand-teardown
       do:
       - task: delete-deployment
-        config:
-          platform: linux
-          image_resource: *image_resource
-          inputs:
-          - name: cf-mysql-ci
-          - name: bosh-lite-info
-          params:
-            BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
-            BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
-            BOSH_CA_CERT: bosh-lite-info/ca-cert
-            BOSH_DEPLOYMENT: cf-mysql
-            ENV_TARGET_FILE: bosh-lite-info/external-ip
-          run:
-            path: cf-mysql-ci/scripts/bosh/delete_deployment_no_env_metadata
+        file: cf-mysql-ci/ci/tasks/delete-deployment-no-env-metadata/task.yml
+        params:
+          BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
+          BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
+          BOSH_CA_CERT: bosh-lite-info/ca-cert
+          BOSH_DEPLOYMENT: cf-mysql
+          ENV_TARGET_FILE: bosh-lite-info/external-ip
       - task: destroy-bosh-lite
         file: cf-mysql-ci/ci/tasks/destroy-bosh-lite.yml
         input_mapping: {bosh-lite-info: bosh-lite-info-stemcell-deleted}
@@ -897,35 +874,21 @@ jobs:
       run:
         path: cf-mysql-ci/scripts/bosh/run_errand
   - task: delete-cf-mysql-deployment
-    config:
-      platform: linux
-      image_resource: *image_resource
-      inputs:
-      - name: cf-mysql-ci
-      - name: bosh-lite-info
-      params:
-        BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
-        BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
-        BOSH_CA_CERT: bosh-lite-info/ca-cert
-        BOSH_DEPLOYMENT: cf-mysql
-        ENV_TARGET_FILE: bosh-lite-info/external-ip
-      run:
-        path: cf-mysql-ci/scripts/bosh/delete_deployment_no_env_metadata
+    file: cf-mysql-ci/ci/tasks/delete-deployment-no-env-metadata/task.yml
+    params:
+      BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
+      BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
+      BOSH_CA_CERT: bosh-lite-info/ca-cert
+      BOSH_DEPLOYMENT: cf-mysql
+      ENV_TARGET_FILE: bosh-lite-info/external-ip
   - task: delete-cf-deployment
-    config:
-      platform: linux
-      image_resource: *image_resource
-      inputs:
-      - name: cf-mysql-ci
-      - name: bosh-lite-info
-      params:
-        BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
-        BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
-        BOSH_DEPLOYMENT: cf
-        BOSH_CA_CERT: bosh-lite-info/ca-cert
-        ENV_TARGET_FILE: bosh-lite-info/external-ip
-      run:
-        path: cf-mysql-ci/scripts/bosh/delete_deployment_no_env_metadata
+    file: cf-mysql-ci/ci/tasks/delete-deployment-no-env-metadata/task.yml
+    params:
+      BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
+      BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
+      BOSH_DEPLOYMENT: cf
+      BOSH_CA_CERT: bosh-lite-info/ca-cert
+      ENV_TARGET_FILE: bosh-lite-info/external-ip
   - task: destroy-bosh-lite
     file: cf-mysql-ci/ci/tasks/destroy-bosh-lite.yml
     input_mapping: {bosh-lite-info: bosh-lite-info-stemcell-deleted}
@@ -1105,35 +1068,21 @@ jobs:
       run:
         path: cf-mysql-ci/scripts/failover/failover-test
   - task: delete-cf-mysql-deployment
-    config:
-      platform: linux
-      image_resource: *image_resource
-      inputs:
-      - name: cf-mysql-ci
-      - name: bosh-lite-info
-      params:
-        BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
-        BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
-        BOSH_CA_CERT: bosh-lite-info/ca-cert
-        BOSH_DEPLOYMENT: cf-mysql
-        ENV_TARGET_FILE: bosh-lite-info/external-ip
-      run:
-        path: cf-mysql-ci/scripts/bosh/delete_deployment_no_env_metadata
+    file: cf-mysql-ci/ci/tasks/delete-deployment-no-env-metadata/task.yml
+    params:
+      BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
+      BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
+      BOSH_CA_CERT: bosh-lite-info/ca-cert
+      BOSH_DEPLOYMENT: cf-mysql
+      ENV_TARGET_FILE: bosh-lite-info/external-ip
   - task: delete-cf-deployment
-    config:
-      platform: linux
-      image_resource: *image_resource
-      inputs:
-      - name: cf-mysql-ci
-      - name: bosh-lite-info
-      params:
-        BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
-        BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
-        BOSH_DEPLOYMENT: cf
-        BOSH_CA_CERT: bosh-lite-info/ca-cert
-        ENV_TARGET_FILE: bosh-lite-info/external-ip
-      run:
-        path: cf-mysql-ci/scripts/bosh/delete_deployment_no_env_metadata
+    file: cf-mysql-ci/ci/tasks/delete-deployment-no-env-metadata/task.yml
+    params:
+      BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
+      BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
+      BOSH_DEPLOYMENT: cf
+      BOSH_CA_CERT: bosh-lite-info/ca-cert
+      ENV_TARGET_FILE: bosh-lite-info/external-ip
   - task: destroy-bosh-lite
     file: cf-mysql-ci/ci/tasks/destroy-bosh-lite.yml
     input_mapping: {bosh-lite-info: bosh-lite-info-stemcell-deleted}
