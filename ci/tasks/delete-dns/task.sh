@@ -1,9 +1,7 @@
 #!/bin/bash
 set -eux
 
-my_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-workspace_dir="$( cd "${my_dir}/../../../" && pwd )"
-
+workspace_dir="$(pwd)"
 service_key="${workspace_dir}/deployments-core-services/bosh-lite-gcp/ci-service-account.json"
 
 gcloud auth activate-service-account --key-file=${service_key}

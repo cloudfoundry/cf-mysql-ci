@@ -885,17 +885,7 @@ jobs:
     file: cf-mysql-ci/ci/tasks/destroy-bosh-lite-terraform.yml
     input_mapping: {deployments: deployments-terraformed}
   - task: delete-dns
-    config:
-      platform: linux
-      image_resource: *image_resource
-      inputs:
-      - name: cf-mysql-ci
-      - name: bosh-lite-info
-      - name: url
-      - name: deployments
-        path: deployments-core-services
-      run:
-        path: cf-mysql-ci/scripts/bosh-lite-gcp/delete-dns
+    file: cf-mysql-ci/ci/tasks/delete-dns/task.yml
 
 ### FAILOVER
 - name: test-failover
@@ -1068,18 +1058,7 @@ jobs:
     file: cf-mysql-ci/ci/tasks/destroy-bosh-lite-terraform.yml
     input_mapping: {deployments: deployments-terraformed}
   - task: delete-dns
-    config:
-      platform: linux
-      image_resource: *image_resource
-      inputs:
-      - name: cf-mysql-ci
-      - name: bosh-lite-info
-      - name: url
-      - name: deployments
-        path: deployments-core-services
-      run:
-        path: cf-mysql-ci/scripts/bosh-lite-gcp/delete-dns
-
+    file: cf-mysql-ci/ci/tasks/delete-dns/task.yml
 ### UPGRADE
 - name: test-upgrade-from-previous
   plan:

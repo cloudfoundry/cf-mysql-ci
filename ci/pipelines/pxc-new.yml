@@ -418,17 +418,7 @@ jobs:
       input_mapping: {deployments: deployments-terraformed}
     - task: delete-dns
       attempts: 5
-      config:
-        platform: linux
-        image_resource: *image_resource
-        inputs:
-        - name: cf-mysql-ci
-        - name: bosh-lite-info
-        - name: url
-        - name: deployments
-          path: deployments-core-services
-        run:
-          path: cf-mysql-ci/scripts/bosh-lite-gcp/delete-dns
+      file: cf-mysql-ci/ci/tasks/delete-dns/task.yml
 
 - name: test-migrate-to-pxc
   plan:
