@@ -335,10 +335,14 @@ jobs:
     - get: version
   - aggregate:
     - task: test-unit
-      file: cf-mysql-ci/ci/tasks/test-unit.yml
+      input_mapping:
+        mysql-release: cf-mysql-release
+      file: cf-mysql-ci/ci/tasks/test-unit/task.yml
       attempts: 5
     - task: test-integration
-      file: cf-mysql-ci/ci/tasks/test-integration.yml
+      input_mapping:
+        mysql-release: cf-mysql-release
+      file: cf-mysql-ci/ci/tasks/test-integration/task.yml
     - task: test-broker
       file: cf-mysql-ci/ci/tasks/test-broker.yml
     - task: test-broker-dependencies

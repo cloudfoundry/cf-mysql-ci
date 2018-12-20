@@ -15,13 +15,14 @@ outputs:
 - name: compiled-release-tarball
 
 params:
+  BOSH_ALL_PROXY:
   BOSH_CLIENT:
   BOSH_CLIENT_SECRET:
   BOSH_ENVIRONMENT:
+  BOSH_JUMPBOX_PRIVATE_KEY:
   RELEASE_NAME:
   STEMCELL_LINE:
-  BOSH_ALL_PROXY:
-  BOSH_JUMPBOX_PRIVATE_KEY:
+  OUTPUT_DIR: compiled-release-tarball
 
 run:
   path: cf-mysql-ci/scripts/compile_release

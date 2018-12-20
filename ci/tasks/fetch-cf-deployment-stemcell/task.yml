@@ -1,0 +1,9 @@
+image_resource: *image_resource
+inputs:
+- name: cf-deployment-rc
+- name: cf-mysql-ci
+outputs:
+- name: cf-deployment-rc-stemcell
+run:
+  path: cf-mysql-ci/ci/tasks/fetch-cf-deployment-stemcell/task.sh
+platform: linux

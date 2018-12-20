@@ -1,0 +1,8 @@
+image_resource: *image_resource
+inputs:
+  - name: cf-mysql-ci
+  - name: bosh-lite-info
+run:
+  path: cf-mysql-ci/ci/tasks/test-galera-encryption/task.sh
+
+platform: linux

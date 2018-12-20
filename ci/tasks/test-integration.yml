@@ -4,6 +4,6 @@ image_resource:
   source:
     repository: pivotalcf/mysql-restore
 inputs:
-- name: cf-mysql-release
+- name: mysql-release
 run:
-  path: cf-mysql-release/scripts/test-integration
+  path: mysql-release/scripts/test-integration
