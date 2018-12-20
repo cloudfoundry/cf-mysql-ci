@@ -2,9 +2,8 @@
 
 set -eux
 
-MY_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-WORKSPACE_DIR="$( cd ${MY_DIR}/../../.. && pwd )"
-SQL_QUERY_DIR=$( cd ${MY_DIR}/test-data && pwd )
+WORKSPACE_DIR="$(pwd)"
+SQL_QUERY_DIR="${WORKSPACE_DIR}/cf-mysql-ci/ci/tasks/persistence-load-test-data/test-data/"
 
 : "${ENV_TARGET_FILE:?}"
 

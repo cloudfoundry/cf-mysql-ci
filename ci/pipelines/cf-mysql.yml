@@ -1116,23 +1116,12 @@ jobs:
     file: cf-mysql-ci/ci/tasks/delete-stemcell/task.yml
   - *ondemand-deploy-manifest
   - task: persistence-test-data-write
-    config:
-      platform: linux
-      image_resource:
-        type: docker-image
-        source:
-          repository: pivotalcf/mysql-restore
-      inputs:
-      - name: bosh-lite-info
-      - name: cf-mysql-ci
-      params:
-        MYSQL_TUNNEL_USERNAME: jumpbox
-        MYSQL_VM_IP: 10.244.7.3
-        ENV_TARGET_FILE: bosh-lite-info/external-ip
-        SSH_KEY_FILE: bosh-lite-info/jumpbox-private-key
-      run:
-        path: cf-mysql-ci/scripts/persistence/load-test-data
-
+    file: cf-mysql-ci/ci/tasks/persistence-load-test-data/task.yml
+    params:
+      MYSQL_TUNNEL_USERNAME: jumpbox
+      MYSQL_VM_IP: 10.244.7.3
+      ENV_TARGET_FILE: bosh-lite-info/external-ip
+      SSH_KEY_FILE: bosh-lite-info/jumpbox-private-key
   - task: make-manifest
     file: cf-mysql-ci/ci/tasks/make-manifest.yml
     input_mapping:
@@ -1174,22 +1163,12 @@ jobs:
   plan:
   - *ondemand-setup
   - task: persistence-test-data-write
-    config:
-      platform: linux
-      image_resource:
-        type: docker-image
-        source:
-          repository: pivotalcf/mysql-restore
-      inputs:
-      - name: bosh-lite-info
-      - name: cf-mysql-ci
-      params:
-        ENV_TARGET_FILE: bosh-lite-info/director-url
-        BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
-        BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
-        BOSH_DEPLOYMENT: cf-mysql
-      run:
-        path: cf-mysql-ci/scripts/persistence/load-test-data
+    file: cf-mysql-ci/ci/tasks/persistence-load-test-data/task.yml
+    params:
+      ENV_TARGET_FILE: bosh-lite-info/director-url
+      BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
+      BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
+      BOSH_DEPLOYMENT: cf-mysql
   - task: break-mysql-cluster
     config:
       platform: linux
