@@ -1,8 +1,7 @@
 #!/bin/bash
 set -eux
 
-my_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-workspace_dir="$( cd "${my_dir}/../../../" && pwd )"
+workspace_dir="$(pwd)"
 source "${workspace_dir}/cf-mysql-ci/scripts/utils.sh"
 
 service_key="${workspace_dir}/deployments-core-services/bosh-lite-gcp/ci-service-account.json"

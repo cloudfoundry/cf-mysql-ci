@@ -761,18 +761,7 @@ jobs:
     - aggregate:
       - task: create-dns
         attempts: 2
-        config:
-          platform: linux
-          image_resource: *image_resource
-          inputs:
-          - name: cf-mysql-ci
-          - name: bosh-lite-info
-          - name: deployments
-            path: deployments-core-services
-          outputs:
-          - name: url
-          run:
-            path: cf-mysql-ci/scripts/bosh-lite-gcp/create-dns
+        file: cf-mysql-ci/ci/tasks/create-dns/task.yml
       - task: delete-stemcell
         file: cf-mysql-ci/ci/tasks/delete-stemcell/task.yml
     - aggregate:
@@ -950,18 +939,7 @@ jobs:
     - aggregate:
       - task: create-dns
         attempts: 2
-        config:
-          platform: linux
-          image_resource: *image_resource
-          inputs:
-          - name: cf-mysql-ci
-          - name: bosh-lite-info
-          - name: deployments
-            path: deployments-core-services
-          outputs:
-          - name: url
-          run:
-            path: cf-mysql-ci/scripts/bosh-lite-gcp/create-dns
+        file: cf-mysql-ci/ci/tasks/create-dns/task.yml
       - task: delete-stemcell
         file: cf-mysql-ci/ci/tasks/delete-stemcell/task.yml
     - aggregate:
