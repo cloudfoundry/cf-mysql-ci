@@ -277,6 +277,7 @@ jobs:
       BOSH_CA_CERT: ((concourse-compilation-director/Notes/BOSH_CA_CERT))
       BOSH_ALL_PROXY: ((concourse-compilation-director/Notes/BOSH_ALL_PROXY))
       BOSH_JUMPBOX_PRIVATE_KEY: ((concourse-compilation-director/Notes/BOSH_JUMPBOX_PRIVATE_KEY))
+      STEMCELL_LINE: ubuntu-trusty
   - task: xenial-compile-release #compile pxc release on xenial
     file: cf-mysql-ci/ci/tasks/compile-release/task.yml
     input_mapping:
@@ -290,6 +291,7 @@ jobs:
       BOSH_CA_CERT: ((concourse-compilation-director/Notes/BOSH_CA_CERT))
       BOSH_ALL_PROXY: ((concourse-compilation-director/Notes/BOSH_ALL_PROXY))
       BOSH_JUMPBOX_PRIVATE_KEY: ((concourse-compilation-director/Notes/BOSH_JUMPBOX_PRIVATE_KEY))
+      STEMCELL_LINE: ubuntu-xenial
   - task: fetch-cf-deployment-rc-stemcell
     file: cf-mysql-ci/ci/tasks/fetch-cf-deployment-stemcell/task.yml
   - task: cf-deployment-pxc-compile-release #compile pxc release on cf-d's stemcell
