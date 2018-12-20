@@ -517,17 +517,7 @@ jobs:
       source_file: bosh-lite-info/bosh-deployment-resource-source-file
   # input the org name and try to read it from cf (aka test that data is persisted across the migration)
   - task: check-if-org-exists-pxc
-    config:
-      platform: linux
-      image_resource: *image_resource
-      inputs:
-        - name: cf-mysql-ci # utils.sh
-        - name: bosh-lite-info
-        - name: url # utils.sh
-      outputs:
-        - name: org-name
-      run:
-        path: cf-mysql-ci/scripts/cf/check-if-org-exists-pxc
+    file: cf-mysql-ci/ci/tasks/check-if-org-exists-pxc/task.yml
   - task: run-cats
     attempts: 3
     config:
