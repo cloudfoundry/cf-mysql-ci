@@ -1,5 +1,9 @@
-platform: linux
-image_resource: *image_resource
+---
+image_resource:
+  type: docker-image
+  source:
+    repository: cloudfoundry/cf-mysql-ci
+
 inputs:
 - name: cf-mysql-ci
 - name: bosh-lite-info
@@ -10,3 +14,4 @@ outputs:
 run:
   path: cf-mysql-ci/ci/tasks/create-dns/task.sh
 
+platform: linux

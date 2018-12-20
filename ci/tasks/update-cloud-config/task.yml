@@ -1,6 +1,5 @@
 ---
-platform: linux
-image_resource: &image_resource
+image_resource:
   type: docker-image
   source:
     repository: cloudfoundry/cf-mysql-ci
@@ -19,3 +18,5 @@ params:
 
 run:
   path: cf-mysql-ci/ci/tasks/update-cloud-config/task.sh
+
+platform: linux

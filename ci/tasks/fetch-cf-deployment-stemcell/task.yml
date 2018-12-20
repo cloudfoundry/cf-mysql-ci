@@ -1,4 +1,9 @@
-image_resource: *image_resource
+---
+image_resource:
+  type: docker-image
+  source:
+    repository: cloudfoundry/cf-mysql-ci
+
 inputs:
 - name: cf-deployment-rc
 - name: cf-mysql-ci
