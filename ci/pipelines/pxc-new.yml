@@ -498,17 +498,7 @@ jobs:
       source_file: bosh-lite-info/bosh-deployment-resource-source-file
     # write an org to cf and output the org name
   - task: cf-create-org
-    config:
-      platform: linux
-      image_resource: *image_resource
-      inputs:
-        - name: bosh-lite-info
-        - name: cf-mysql-ci # utils.sh
-        - name: url # utils.sh
-      outputs:
-        - name: org-name
-      run:
-        path: cf-mysql-ci/scripts/cf/create-org
+    file: cf-mysql-ci/ci/tasks/create-org/task.yml
   # deploy cf with pxc as the database, and pxc turned "on"
   - put: cf-bosh-deployment
     params:
