@@ -578,15 +578,7 @@ jobs:
 #      passed: [create-and-compile-release]
     - get: bpm-release
   - task: check-last-pxc-release-version
-    config:
-      platform: linux
-      image_resource: *image_resource
-      inputs:
-      - name: cf-mysql-ci
-      - name: last-pxc-release-source
-      - name: last-pxc-release-bosh-release
-      run:
-        path: cf-mysql-ci/scripts/upgrade/check-last-pxc-release-version
+    file: cf-mysql-ci/ci/tasks/check-last-pxc-release-version/task.yml
   - aggregate:
     - do: # compile cf-mysql-release
       - put: compiled-packages-lock

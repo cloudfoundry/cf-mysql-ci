@@ -2,10 +2,8 @@
 
 set -eu
 
-my_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-workspace_dir="$( cd "${my_dir}/../../.." && pwd )"
-
-source "${my_dir}/../utils.sh"
+workspace_dir="$(pwd)"
+source "${workspace_dir}/cf-mysql-ci/scripts/utils.sh"
 
 bosh_release_version="$(cat "${workspace_dir}/last-pxc-release-bosh-release/version")"
 pushd "${workspace_dir}/last-pxc-release-source"
