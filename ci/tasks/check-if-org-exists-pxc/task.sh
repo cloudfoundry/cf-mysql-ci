@@ -2,11 +2,9 @@
 
 set -eux
 
-my_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-ci_dir="${my_dir}/../../"
-workspace_dir="${ci_dir}/../"
+workspace_dir="$(pwd)"
 
-source ${ci_dir}/scripts/utils.sh
+source cf-mysql-ci/scripts/utils.sh
 credhub_login
 
 api_url="api.$(cf_domain)"
