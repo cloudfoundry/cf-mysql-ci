@@ -2,18 +2,14 @@
 
 set -eux
 
-MY_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-WORKSPACE_DIR="$( cd ${MY_DIR}/../../.. && pwd )"
-SQL_QUERY_DIR=$( cd ${MY_DIR}/test-data && pwd )
-
-source "${WORKSPACE_DIR}/cf-mysql-ci/scripts/utils.sh"
+source "./cf-mysql-ci/scripts/utils.sh"
 
 credhub_login
 
 export BOSH_ENVIRONMENT=$(cat bosh-lite-info/external-ip)
 export MYSQL_PASSWORD=$(credhub_value /lite/pxc/cf_mysql_mysql_admin_password)
 
-pushd ${SQL_QUERY_DIR}
+pushd ./cf-mysql-ci/ci/tasks/load-test-data/test-data
   echo "Inserting test data..."
 
   mysql --host=${BOSH_ENVIRONMENT} \
