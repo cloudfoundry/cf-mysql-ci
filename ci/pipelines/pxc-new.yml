@@ -629,15 +629,8 @@ jobs:
       stemcells:
       - stemcell/*.tgz
       source_file: bosh-lite-info/bosh-deployment-resource-source-file
-  - task: write-test-data
-    config:
-      platform: linux
-      image_resource: *image_resource
-      inputs:
-        - name: cf-mysql-ci
-        - name: bosh-lite-info
-      run:
-        path: cf-mysql-ci/scripts/upgrade/verify-db-matches-test-data
+  - task: verify-db-matches-test-data
+    file: cf-mysql-ci/ci/tasks/verify-db-matches-test-data/task.yml
   - &smoke-tests
     task: smoke-tests
     config:
