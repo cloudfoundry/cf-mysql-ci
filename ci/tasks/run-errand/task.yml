@@ -1,0 +1,22 @@
+---
+platform: linux
+image_resource:
+  type: docker-image
+  source:
+    repository: cloudfoundry/cf-mysql-ci
+
+inputs:
+  - name: cf-mysql-ci
+  - name: bosh-lite-info
+
+params:
+  BOSH_CA_CERT_PATH: bosh-lite-info/ca-cert
+  BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
+  BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
+  ENV_TARGET_FILE: bosh-lite-info/director-url
+  BOSH_DEPLOYMENT:
+  ERRAND:
+  INSTANCE:
+
+run:
+  path: cf-mysql-ci/ci/tasks/run-errand/task.sh

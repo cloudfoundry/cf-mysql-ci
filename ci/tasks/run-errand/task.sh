@@ -2,9 +2,8 @@
 
 set -eux
 
-my_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-ci_dir="$( cd "${my_dir}/../../" && pwd )"
-WORKSPACE_DIR="$( cd "${ci_dir}/../" && pwd )"
+ci_dir="cf-mysql-ci"
+WORKSPACE_DIR="$(pwd)/${ci_dir}"
 
 source "${ci_dir}/scripts/utils.sh"
 

@@ -631,24 +631,12 @@ jobs:
       source_file: bosh-lite-info/bosh-deployment-resource-source-file
   - task: verify-db-matches-test-data
     file: cf-mysql-ci/ci/tasks/verify-db-matches-test-data/task.yml
-  - &smoke-tests
-    task: smoke-tests
-    config:
-      platform: linux
-      image_resource: *image_resource
-      inputs:
-        - name: cf-mysql-ci
-        - name: bosh-lite-info
-      params:
-        BOSH_CA_CERT_PATH: bosh-lite-info/ca-cert
-        BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
-        BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
-        ENV_TARGET_FILE: bosh-lite-info/director-url
-        ERRAND: smoke-tests
-        BOSH_DEPLOYMENT: pxc
-        INSTANCE: mysql/0
-      run:
-        path: cf-mysql-ci/scripts/bosh/run_errand
+  - task: smoke-tests
+    file: cf-mysql-ci/ci/tasks/run-errand/task.yml
+    params:
+      ERRAND: smoke-tests
+      BOSH_DEPLOYMENT: pxc
+      INSTANCE: mysql/0
   - do: *teardown-bosh-lite
 
 - name: test-audit-logging
@@ -692,7 +680,12 @@ jobs:
       - cf-mysql-ci/operations/pxc/allow-http-proxy-access.yml
       - cf-mysql-ci/operations/pxc/enable-remote-admin-access.yml
       - cf-mysql-ci/operations/pxc/test-audit-logging.yml
-  - *smoke-tests
+  - task: smoke-tests
+    file: cf-mysql-ci/ci/tasks/run-errand/task.yml
+    params:
+      ERRAND: smoke-tests
+      BOSH_DEPLOYMENT: pxc
+      INSTANCE: mysql/0
   - task: test-audit-logging
     config:
       platform: linux
@@ -822,7 +815,12 @@ jobs:
           - pxc-release/operations/use-clustered.yml
           - cf-mysql-ci/operations/pxc/add-proxy-load-balancer.yml
           - cf-mysql-ci/operations/pxc/enable-remote-admin-access.yml
-    - *smoke-tests
+    - task: smoke-tests
+      file: cf-mysql-ci/ci/tasks/run-errand/task.yml
+      params:
+        ERRAND: smoke-tests
+        BOSH_DEPLOYMENT: pxc
+        INSTANCE: mysql/0
     - task: test-bootstrap
       config:
         platform: linux
@@ -888,7 +886,12 @@ jobs:
       - cf-mysql-ci/operations/pxc/add-proxy-load-balancer.yml
       - cf-mysql-ci/operations/pxc/allow-http-proxy-access.yml
       - cf-mysql-ci/operations/pxc/enable-remote-admin-access.yml
-  - *smoke-tests
+  - task: smoke-tests
+    file: cf-mysql-ci/ci/tasks/run-errand/task.yml
+    params:
+      ERRAND: smoke-tests
+      BOSH_DEPLOYMENT: pxc
+      INSTANCE: mysql/0
   - task: test-failover
     config:
       platform: linux
@@ -1016,7 +1019,12 @@ jobs:
           - pxc-release/operations/use-clustered.yml
           - cf-mysql-ci/operations/pxc/add-proxy-load-balancer.yml
           - cf-mysql-ci/operations/pxc/enable-remote-admin-access.yml
-    - *smoke-tests
+    - task: smoke-tests
+      file: cf-mysql-ci/ci/tasks/run-errand/task.yml
+      params:
+        ERRAND: smoke-tests
+        BOSH_DEPLOYMENT: pxc
+        INSTANCE: mysql/0
     - task: test-scaling
       config:
         platform: linux
@@ -1081,7 +1089,12 @@ jobs:
           - pxc-release/operations/use-clustered.yml
           - cf-mysql-ci/operations/pxc/add-proxy-load-balancer.yml
           - cf-mysql-ci/operations/pxc/enable-remote-admin-access.yml
-    - *smoke-tests
+    - task: smoke-tests
+      file: cf-mysql-ci/ci/tasks/run-errand/task.yml
+      params:
+        ERRAND: smoke-tests
+        BOSH_DEPLOYMENT: pxc
+        INSTANCE: mysql/0
     - task: test-tls
       config:
         platform: linux
@@ -1142,7 +1155,12 @@ jobs:
       stemcells:
       - stemcell/*.tgz
       source_file: bosh-lite-info/bosh-deployment-resource-source-file
-  - *smoke-tests
+  - task: smoke-tests
+    file: cf-mysql-ci/ci/tasks/run-errand/task.yml
+    params:
+      ERRAND: smoke-tests
+      BOSH_DEPLOYMENT: pxc
+      INSTANCE: mysql/0
   - task: delete-deployment
     file: cf-mysql-ci/ci/tasks/delete-deployment-no-env-metadata/task.yml
     params:
@@ -1217,7 +1235,12 @@ jobs:
       ops_files:
       - pxc-release/operations/use-clustered.yml
       - pxc-release/operations/xenial-stemcell.yml
-  - *smoke-tests
+  - task: smoke-tests
+    file: cf-mysql-ci/ci/tasks/run-errand/task.yml
+    params:
+      ERRAND: smoke-tests
+      BOSH_DEPLOYMENT: pxc
+      INSTANCE: mysql/0
   - do: *teardown-bosh-lite
 
 #- name: promote-release-candidate
