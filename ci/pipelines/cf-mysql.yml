@@ -643,23 +643,11 @@ jobs:
         stemcells:
         - stemcell/*.tgz
         source_file: bosh-lite-info/bosh-deployment-resource-source-file
-  - &run-smoke-tests-ondemand
-    task: run-smoke-tests
-    config:
-      platform: linux
-      image_resource: *image_resource
-      inputs:
-        - name: cf-mysql-ci
-        - name: bosh-lite-info
-      params:
-        BOSH_CA_CERT_PATH: bosh-lite-info/ca-cert
-        BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
-        BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
-        ENV_TARGET_FILE: bosh-lite-info/director-url
-        BOSH_DEPLOYMENT: cf-mysql
-        ERRAND: smoke-tests
-      run:
-        path: cf-mysql-ci/scripts/bosh/run_errand
+  - task: run-smoke-tests
+    file: cf-mysql-ci/ci/tasks/run-errand/task.yml
+    params:
+      BOSH_DEPLOYMENT: cf-mysql
+      ERRAND: smoke-tests
   - task: run-scaling-tests
     config:
       platform: linux
@@ -699,7 +687,11 @@ jobs:
 - name: test-arb-to-full-scaling
   plan:
   - *ondemand-setup
-  - *run-smoke-tests-ondemand
+  - task: run-smoke-tests
+    file: cf-mysql-ci/ci/tasks/run-errand/task.yml
+    params:
+      ERRAND: smoke-tests
+      BOSH_DEPLOYMENT: cf-mysql
   - task: run-arb-to-full-scaling-tests
     config:
       platform: linux
@@ -821,21 +813,10 @@ jobs:
         - stemcell/*.tgz
         source_file: bosh-lite-info/bosh-deployment-resource-source-file
   - task: run-broker-registrar
-    config:
-      platform: linux
-      image_resource: *image_resource
-      inputs:
-        - name: cf-mysql-ci
-        - name: bosh-lite-info
-      params:
-        BOSH_CA_CERT_PATH: bosh-lite-info/ca-cert
-        BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
-        BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
-        ENV_TARGET_FILE: bosh-lite-info/director-url
-        ERRAND: broker-registrar
-        BOSH_DEPLOYMENT: cf-mysql
-      run:
-        path: cf-mysql-ci/scripts/bosh/run_errand
+    file: cf-mysql-ci/ci/tasks/run-errand/task.yml
+    params:
+      ERRAND: broker-registrar
+      BOSH_DEPLOYMENT: cf-mysql
   - task: test-tls
     config:
       platform: linux
@@ -847,21 +828,10 @@ jobs:
       run:
         path: cf-mysql-ci/scripts/tls/verify-tls-enabled
   - task: run-smoke-tests
-    config:
-      platform: linux
-      image_resource: *image_resource
-      inputs:
-        - name: cf-mysql-ci
-        - name: bosh-lite-info
-      params:
-        BOSH_CA_CERT_PATH: bosh-lite-info/ca-cert
-        BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
-        BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
-        ENV_TARGET_FILE: bosh-lite-info/director-url
-        ERRAND: smoke-tests
-        BOSH_DEPLOYMENT: cf-mysql
-      run:
-        path: cf-mysql-ci/scripts/bosh/run_errand
+    file: cf-mysql-ci/ci/tasks/run-errand/task.yml
+    params:
+      ERRAND: smoke-tests
+      BOSH_DEPLOYMENT: cf-mysql
   - task: delete-cf-mysql-deployment
     file: cf-mysql-ci/ci/tasks/delete-deployment-no-env-metadata/task.yml
     params:
@@ -986,37 +956,15 @@ jobs:
         - stemcell/*.tgz
         source_file: bosh-lite-info/bosh-deployment-resource-source-file
   - task: run-broker-registrar
-    config:
-      platform: linux
-      image_resource: *image_resource
-      inputs:
-        - name: cf-mysql-ci
-        - name: bosh-lite-info
-      params:
-        BOSH_CA_CERT_PATH: bosh-lite-info/ca-cert
-        BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
-        BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
-        ENV_TARGET_FILE: bosh-lite-info/director-url
-        ERRAND: broker-registrar
-        BOSH_DEPLOYMENT: cf-mysql
-      run:
-        path: cf-mysql-ci/scripts/bosh/run_errand
+    file: cf-mysql-ci/ci/tasks/run-errand/task.yml
+    params:
+      ERRAND: broker-registrar
+      BOSH_DEPLOYMENT: cf-mysql
   - task: run-smoke-tests
-    config:
-      platform: linux
-      image_resource: *image_resource
-      inputs:
-        - name: cf-mysql-ci
-        - name: bosh-lite-info
-      params:
-        BOSH_CA_CERT_PATH: bosh-lite-info/ca-cert
-        BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
-        BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
-        ENV_TARGET_FILE: bosh-lite-info/director-url
-        ERRAND: smoke-tests
-        BOSH_DEPLOYMENT: cf-mysql
-      run:
-        path: cf-mysql-ci/scripts/bosh/run_errand
+    file: cf-mysql-ci/ci/tasks/run-errand/task.yml
+    params:
+      ERRAND: smoke-tests
+      BOSH_DEPLOYMENT: cf-mysql
   - task: run-failover-tests
     config:
       platform: linux
@@ -1155,7 +1103,11 @@ jobs:
       run:
         path: cf-mysql-ci/scripts/persistence/verify-db-matches-test-data
 
-  - *run-smoke-tests-ondemand
+  - task: run-smoke-tests
+    file: cf-mysql-ci/ci/tasks/run-errand/task.yml
+    params:
+      ERRAND: smoke-tests
+      BOSH_DEPLOYMENT: cf-mysql
   - *ondemand-teardown
 
 ### STANDALONE FOR BOOTSTRAP
@@ -1184,21 +1136,10 @@ jobs:
       run:
         path: cf-mysql-ci/scripts/bootstrap/break-mysql-cluster
   - task: bootstrap
-    config:
-      platform: linux
-      image_resource: *image_resource
-      inputs:
-      - name: bosh-lite-info
-      - name: cf-mysql-ci
-      params:
-        BOSH_CA_CERT_PATH: bosh-lite-info/ca-cert
-        BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
-        BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
-        ENV_TARGET_FILE: bosh-lite-info/director-url
-        BOSH_DEPLOYMENT: cf-mysql
-        ERRAND: bootstrap
-      run:
-        path: cf-mysql-ci/scripts/bosh/run_errand
+    file: cf-mysql-ci/ci/tasks/run-errand/task.yml
+    params:
+      BOSH_DEPLOYMENT: cf-mysql
+      ERRAND: bootstrap
   - task: persistence-test-data-read
     config:
       platform: linux
@@ -1241,21 +1182,10 @@ jobs:
       run:
         path: cf-mysql-ci/scripts/data-loss/force-sst-test
   - task: run-rejoin-unsafe-errand
-    config:
-      platform: linux
-      image_resource: *image_resource
-      inputs:
-        - name: cf-mysql-ci
-        - name: bosh-lite-info
-      params:
-        BOSH_CA_CERT_PATH: bosh-lite-info/ca-cert
-        BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
-        BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
-        ENV_TARGET_FILE: bosh-lite-info/director-url
-        BOSH_DEPLOYMENT: cf-mysql
-        ERRAND: rejoin-unsafe
-      run:
-        path: cf-mysql-ci/scripts/bosh/run_errand
+    file: cf-mysql-ci/ci/tasks/run-errand/task.yml
+    params:
+      BOSH_DEPLOYMENT: cf-mysql
+      ERRAND: rejoin-unsafe
   - *ondemand-teardown
 
 ### DISABLE AUTO SST
@@ -1545,7 +1475,11 @@ jobs:
       stemcells:
       - stemcell/*.tgz
       source_file: bosh-lite-info/bosh-deployment-resource-source-file
-  - *run-smoke-tests-ondemand
+  - task: run-smoke-tests
+    file: cf-mysql-ci/ci/tasks/run-errand/task.yml
+    params:
+      ERRAND: smoke-tests
+      BOSH_DEPLOYMENT: cf-mysql
   - *ondemand-teardown
 
 - name: upload-rc-artifacts
