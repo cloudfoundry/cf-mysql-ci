@@ -11,8 +11,8 @@ inputs:
 
 params:
   BOSH_CA_CERT_PATH: bosh-lite-info/ca-cert
-  BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
-  BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
+  BOSH_CLIENT: REPLACE-ME
+  BOSH_CLIENT_SECRET: REPLACE-ME
   ENV_TARGET_FILE: bosh-lite-info/director-url
   BOSH_DEPLOYMENT:
   ERRAND:

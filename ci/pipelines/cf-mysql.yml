@@ -646,6 +646,8 @@ jobs:
   - task: run-smoke-tests
     file: cf-mysql-ci/ci/tasks/run-errand/task.yml
     params:
+      BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
+      BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
       BOSH_DEPLOYMENT: cf-mysql
       ERRAND: smoke-tests
   - task: run-scaling-tests
@@ -690,6 +692,8 @@ jobs:
   - task: run-smoke-tests
     file: cf-mysql-ci/ci/tasks/run-errand/task.yml
     params:
+      BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
+      BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
       ERRAND: smoke-tests
       BOSH_DEPLOYMENT: cf-mysql
   - task: run-arb-to-full-scaling-tests
@@ -816,6 +820,8 @@ jobs:
     file: cf-mysql-ci/ci/tasks/run-errand/task.yml
     params:
       ERRAND: broker-registrar
+      BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
+      BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
       BOSH_DEPLOYMENT: cf-mysql
   - task: test-tls
     config:
@@ -831,6 +837,8 @@ jobs:
     file: cf-mysql-ci/ci/tasks/run-errand/task.yml
     params:
       ERRAND: smoke-tests
+      BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
+      BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
       BOSH_DEPLOYMENT: cf-mysql
   - task: delete-cf-mysql-deployment
     file: cf-mysql-ci/ci/tasks/delete-deployment-no-env-metadata/task.yml
@@ -959,11 +967,15 @@ jobs:
     file: cf-mysql-ci/ci/tasks/run-errand/task.yml
     params:
       ERRAND: broker-registrar
+      BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
+      BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
       BOSH_DEPLOYMENT: cf-mysql
   - task: run-smoke-tests
     file: cf-mysql-ci/ci/tasks/run-errand/task.yml
     params:
       ERRAND: smoke-tests
+      BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
+      BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
       BOSH_DEPLOYMENT: cf-mysql
   - task: run-failover-tests
     config:
@@ -1107,6 +1119,8 @@ jobs:
     file: cf-mysql-ci/ci/tasks/run-errand/task.yml
     params:
       ERRAND: smoke-tests
+      BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
+      BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
       BOSH_DEPLOYMENT: cf-mysql
   - *ondemand-teardown
 
@@ -1138,6 +1152,8 @@ jobs:
   - task: bootstrap
     file: cf-mysql-ci/ci/tasks/run-errand/task.yml
     params:
+      BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
+      BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
       BOSH_DEPLOYMENT: cf-mysql
       ERRAND: bootstrap
   - task: persistence-test-data-read
@@ -1184,6 +1200,8 @@ jobs:
   - task: run-rejoin-unsafe-errand
     file: cf-mysql-ci/ci/tasks/run-errand/task.yml
     params:
+      BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
+      BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
       BOSH_DEPLOYMENT: cf-mysql
       ERRAND: rejoin-unsafe
   - *ondemand-teardown
@@ -1478,6 +1496,8 @@ jobs:
   - task: run-smoke-tests
     file: cf-mysql-ci/ci/tasks/run-errand/task.yml
     params:
+      BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
+      BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
       ERRAND: smoke-tests
       BOSH_DEPLOYMENT: cf-mysql
   - *ondemand-teardown
