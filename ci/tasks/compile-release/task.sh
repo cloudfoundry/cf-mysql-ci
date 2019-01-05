@@ -2,8 +2,7 @@
 
 set -eux
 
-MY_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-WORKSPACE_DIR="$( cd "${MY_DIR}/../.." && pwd )"
+WORKSPACE_DIR="$(pwd)"
 OUTPUT_DIR="${WORKSPACE_DIR}/${OUTPUT_DIR:-compiled-release-tarball}"
 DEPLOYMENT_NAME=d-$(cat /proc/sys/kernel/random/uuid)
 
@@ -14,7 +13,7 @@ set -x
 
 BOSH_ALL_PROXY="$BOSH_ALL_PROXY=$jb_tmp_file"
 
-source "${MY_DIR}/utils.sh"
+source "cf-mysql-ci/scripts/utils.sh"
 
 RELEASE_TARBALL_DIR=${RELEASE_TARBALL_DIR:-release-tarball}
 RELEASE_TARBALL_DIR="${WORKSPACE_DIR}/${RELEASE_TARBALL_DIR}"

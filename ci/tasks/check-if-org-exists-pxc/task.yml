@@ -1,5 +1,6 @@
 ---
 platform: linux
+
 image_resource:
   type: docker-image
   source:
@@ -9,8 +10,10 @@ inputs:
   - name: cf-mysql-ci # utils.sh
   - name: bosh-lite-info
   - name: url # utils.sh
+
 outputs:
   - name: org-name
+
 run:
   path: cf-mysql-ci/ci/tasks/check-if-org-exists-pxc/task.sh
 

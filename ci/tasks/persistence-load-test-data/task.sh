@@ -3,7 +3,7 @@
 set -eux
 
 WORKSPACE_DIR="$(pwd)"
-SQL_QUERY_DIR="${WORKSPACE_DIR}/cf-mysql-ci/ci/tasks/persistence-load-test-data/test-data/"
+SQL_QUERY_DIR="${WORKSPACE_DIR}/cf-mysql-ci/scripts/test-data/"
 
 : "${ENV_TARGET_FILE:?}"
 

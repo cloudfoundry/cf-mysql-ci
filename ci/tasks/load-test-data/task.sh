@@ -2,6 +2,7 @@
 
 set -eux
 
+WORKSPACE_DIR="$(pwd)"
 source "./cf-mysql-ci/scripts/utils.sh"
 
 credhub_login
@@ -9,7 +10,7 @@ credhub_login
 export BOSH_ENVIRONMENT=$(cat bosh-lite-info/external-ip)
 export MYSQL_PASSWORD=$(credhub_value /lite/pxc/cf_mysql_mysql_admin_password)
 
-pushd ./cf-mysql-ci/ci/tasks/load-test-data/test-data
+pushd ./cf-mysql-ci/scripts/test-data
   echo "Inserting test data..."
 
   mysql --host=${BOSH_ENVIRONMENT} \

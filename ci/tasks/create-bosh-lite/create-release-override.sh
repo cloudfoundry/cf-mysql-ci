@@ -2,10 +2,7 @@
 
 set -eu
 
-MY_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-workspace_dir="$( cd "${MY_DIR}/../.." && pwd )"
-
-source "${MY_DIR}/utils.sh"
+source "$(pwd)/cf-mysql-ci/scripts/utils.sh"
 
 override_for_release () {
   RELEASE_TARBALL_DIR="$1"

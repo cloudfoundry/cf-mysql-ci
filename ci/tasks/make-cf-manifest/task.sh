@@ -5,9 +5,7 @@ set -eux
 : "${DNS_NAME}"
 : "${PROXY_LB:=false}"
 
-my_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-workspace_dir="$( cd "${my_dir}/../../../" && pwd )"
-
+workspace_dir="$(pwd)"
 operations=""
 
 if ${DEPLOY_WITH_DIEGO_CA_CERT}; then

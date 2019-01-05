@@ -1,9 +1,7 @@
 #!/bin/bash
 set -eux
 
-my_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-scripts_dir="$( cd "${my_dir}/../" && pwd )"
-workspace_dir="$( cd "${my_dir}/../../../" && pwd )"
+workspace_dir="$(pwd)"
 
 cf_mysql_deployment_dir="${workspace_dir}/cf-mysql-deployment"
 
@@ -18,7 +16,7 @@ stemcell_dir="${workspace_dir}/stemcell"
 : "${SUBNETWORK}"
 : "${BOSH_CLIENT_SECRET}"
 
-source "${scripts_dir}/create_release_override"
+source "cf-mysql-ci/ci/tasks/create-bosh-lite/create-release-override.sh"
 
 bosh_lite_dir="${DEPLOYMENTS_DIR}/bosh-lite-gcp"
 

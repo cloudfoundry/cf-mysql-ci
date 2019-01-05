@@ -2,6 +2,7 @@
 
 set -eux
 
+WORKSPACE_DIR="$(pwd)"
 source "cf-mysql-ci/scripts/utils.sh"
 
 credhub_login
