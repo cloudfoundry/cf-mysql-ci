@@ -8,4 +8,4 @@ inputs:
   - name: pxc-release
   - name: cf-mysql-ci
 run:
-  path: cf-mysql-ci/scripts/integration/run-galera-init-integration
+  path: cf-mysql-ci/ci/tasks/run-galera-init-integration/task.sh

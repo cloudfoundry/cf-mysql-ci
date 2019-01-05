@@ -235,9 +235,8 @@ jobs:
         mysql-release: pxc-release
       file: cf-mysql-ci/ci/tasks/test-unit/task.yml
     - task: test-integration
-      input_mapping:
-        mysql-release: pxc-release
-      file: cf-mysql-ci/ci/tasks/test-integration/task.yml
+      file: cf-mysql-ci/ci/tasks/run-galera-init-integration/task.yml
+      privileged: true
 
 - name: create-and-compile-release
   plan:
