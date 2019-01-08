@@ -690,21 +690,12 @@ jobs:
       BOSH_DEPLOYMENT: pxc
       INSTANCE: mysql/0
   - task: test-audit-logging
-    config:
-      platform: linux
-      image_resource: *image_resource
-      inputs:
-        - name: cf-mysql-ci
-        - name: bosh-lite-info
-        - name: pxc-release
-      params:
-        AUDIT_LOG_PATH: /var/vcap/store/mysql_audit_logs/mysql_server_audit.log
-        BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
-        BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
-        BOSH_DEPLOYMENT: pxc
-        TEST_SUITE_NAME: "audit_logging"
-      run:
-        path: cf-mysql-ci/scripts/integration/run-pxc-integration
+    file: cf-mysql-ci/ci/tasks/test-integration-suites/task.yml
+    params:
+      AUDIT_LOG_PATH: /var/vcap/store/mysql_audit_logs/mysql_server_audit.log
+      BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
+      BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
+      TEST_SUITE_NAME: "audit_logging"
   - task: delete-deployment
     file: cf-mysql-ci/ci/tasks/delete-deployment-no-env-metadata/task.yml
     params:
@@ -755,20 +746,11 @@ jobs:
           - cf-mysql-ci/operations/pxc/add-proxy-load-balancer.yml
           - cf-mysql-ci/operations/pxc/enable-remote-admin-access.yml
     - task: test-autotune
-      config:
-        platform: linux
-        image_resource: *image_resource
-        inputs:
-          - name: cf-mysql-ci
-          - name: bosh-lite-info
-          - name: pxc-release
-        params:
-          BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
-          BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
-          BOSH_DEPLOYMENT: pxc
-          TEST_SUITE_NAME: "autotune"
-        run:
-          path: cf-mysql-ci/scripts/integration/run-pxc-integration
+      file: cf-mysql-ci/ci/tasks/test-integration-suites/task.yml
+      params:
+        BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
+        BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
+        TEST_SUITE_NAME: "autotune"
     - task: delete-deployment
       file: cf-mysql-ci/ci/tasks/delete-deployment-no-env-metadata/task.yml
       params:
@@ -827,20 +809,11 @@ jobs:
         BOSH_DEPLOYMENT: pxc
         INSTANCE: mysql/0
     - task: test-bootstrap
-      config:
-        platform: linux
-        image_resource: *image_resource
-        inputs:
-          - name: cf-mysql-ci
-          - name: bosh-lite-info
-          - name: pxc-release
-        params:
-          BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
-          BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
-          BOSH_DEPLOYMENT: pxc
-          TEST_SUITE_NAME: "bootstrap"
-        run:
-          path: cf-mysql-ci/scripts/integration/run-pxc-integration
+      file: cf-mysql-ci/ci/tasks/test-integration-suites/task.yml
+      params:
+        BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
+        BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
+        TEST_SUITE_NAME: "bootstrap"
     - task: delete-deployment
       file: cf-mysql-ci/ci/tasks/delete-deployment-no-env-metadata/task.yml
       params:
@@ -900,20 +873,12 @@ jobs:
       BOSH_DEPLOYMENT: pxc
       INSTANCE: mysql/0
   - task: test-failover
-    config:
-      platform: linux
-      image_resource: *image_resource
-      inputs:
-        - name: cf-mysql-ci
-        - name: bosh-lite-info
-        - name: pxc-release
-      params:
-        BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
-        BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
-        BOSH_DEPLOYMENT: pxc
-        TEST_SUITE_NAME: "failover"
-      run:
-        path: cf-mysql-ci/scripts/integration/run-pxc-integration
+    file: cf-mysql-ci/ci/tasks/test-integration-suites/task.yml
+    params:
+      BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
+      BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
+      BOSH_DEPLOYMENT: pxc
+      TEST_SUITE_NAME: "failover"
   - task: delete-deployment
     file: cf-mysql-ci/ci/tasks/delete-deployment-no-env-metadata/task.yml
     params:
@@ -963,20 +928,11 @@ jobs:
       - pxc-release/operations/use-clustered.yml
       - cf-mysql-ci/operations/pxc/add-proxy-load-balancer.yml
   - task: test-no-remote-admin-access
-    config:
-      platform: linux
-      image_resource: *image_resource
-      inputs:
-        - name: cf-mysql-ci
-        - name: bosh-lite-info
-        - name: pxc-release
-      params:
-        BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
-        BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
-        BOSH_DEPLOYMENT: pxc
-        TEST_SUITE_NAME: "no_remote_access"
-      run:
-        path: cf-mysql-ci/scripts/integration/run-pxc-integration
+    file: cf-mysql-ci/ci/tasks/test-integration-suites/task.yml
+    params:
+      BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
+      BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
+      TEST_SUITE_NAME: "no_remote_access"
   - task: delete-deployment
     file: cf-mysql-ci/ci/tasks/delete-deployment-no-env-metadata/task.yml
     params:
@@ -1035,20 +991,11 @@ jobs:
         BOSH_DEPLOYMENT: pxc
         INSTANCE: mysql/0
     - task: test-scaling
-      config:
-        platform: linux
-        image_resource: *image_resource
-        inputs:
-          - name: cf-mysql-ci
-          - name: bosh-lite-info
-          - name: pxc-release
-        params:
-          BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
-          BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
-          BOSH_DEPLOYMENT: pxc
-          TEST_SUITE_NAME: "scaling"
-        run:
-          path: cf-mysql-ci/scripts/integration/run-pxc-integration
+      file: cf-mysql-ci/ci/tasks/test-integration-suites/task.yml
+      params:
+        BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
+        BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
+        TEST_SUITE_NAME: "scaling"
     - task: delete-deployment
       file: cf-mysql-ci/ci/tasks/delete-deployment-no-env-metadata/task.yml
       params:
@@ -1107,20 +1054,11 @@ jobs:
         BOSH_DEPLOYMENT: pxc
         INSTANCE: mysql/0
     - task: test-tls
-      config:
-        platform: linux
-        image_resource: *image_resource
-        inputs:
-          - name: cf-mysql-ci
-          - name: bosh-lite-info
-          - name: pxc-release
-        params:
-          BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
-          BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
-          BOSH_DEPLOYMENT: pxc
-          TEST_SUITE_NAME: "tls"
-        run:
-          path: cf-mysql-ci/scripts/integration/run-pxc-integration
+      file: cf-mysql-ci/ci/tasks/test-integration-suites/task.yml
+      params:
+        BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
+        BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
+        TEST_SUITE_NAME: "tls"
     - task: delete-deployment
       file: cf-mysql-ci/ci/tasks/delete-deployment-no-env-metadata/task.yml
       params:
