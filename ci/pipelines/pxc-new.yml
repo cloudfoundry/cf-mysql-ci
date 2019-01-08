@@ -402,18 +402,7 @@ jobs:
   - task: run-cats
     file: cf-mysql-ci/ci/tasks/run-cats/task.yml
     attempts: 3
-  - task: delete-cf-deployment
-    file: cf-mysql-ci/ci/tasks/delete-deployment-no-env-metadata/task.yml
-    params:
-      BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
-      BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
-      BOSH_DEPLOYMENT: cf
-      BOSH_CA_CERT: bosh-lite-info/ca-cert
-      ENV_TARGET_FILE: bosh-lite-info/external-ip
   - do: &teardown-bosh-lite
-    - task: destroy-bosh-lite
-      file: cf-mysql-ci/ci/tasks/destroy-bosh-lite/task.yml
-      input_mapping: {bosh-lite-info: bosh-lite-info-stemcell-deleted}
     - task: destroy-terraform
       file: cf-mysql-ci/ci/tasks/destroy-bosh-lite-terraform/task.yml
       input_mapping: {deployments: deployments-terraformed}
@@ -537,14 +526,6 @@ jobs:
       vars_files:
       - url/url-vars.yml
       source_file: bosh-lite-info/bosh-deployment-resource-source-file
-  - task: delete-cf-deployment
-    file: cf-mysql-ci/ci/tasks/delete-deployment-no-env-metadata/task.yml
-    params:
-      BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
-      BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
-      BOSH_DEPLOYMENT: cf
-      BOSH_CA_CERT: bosh-lite-info/ca-cert
-      ENV_TARGET_FILE: bosh-lite-info/external-ip
   - do: *teardown-bosh-lite
 
 - name: test-upgrade-pxc
@@ -696,14 +677,6 @@ jobs:
       BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
       BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
       TEST_SUITE_NAME: "audit_logging"
-  - task: delete-deployment
-    file: cf-mysql-ci/ci/tasks/delete-deployment-no-env-metadata/task.yml
-    params:
-      BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
-      BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
-      BOSH_DEPLOYMENT: pxc
-      BOSH_CA_CERT: bosh-lite-info/ca-cert
-      ENV_TARGET_FILE: bosh-lite-info/external-ip
   - do: *teardown-bosh-lite
 
 - name: test-autotune
@@ -751,14 +724,6 @@ jobs:
         BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
         BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
         TEST_SUITE_NAME: "autotune"
-    - task: delete-deployment
-      file: cf-mysql-ci/ci/tasks/delete-deployment-no-env-metadata/task.yml
-      params:
-        BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
-        BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
-        BOSH_DEPLOYMENT: pxc
-        BOSH_CA_CERT: bosh-lite-info/ca-cert
-        ENV_TARGET_FILE: bosh-lite-info/external-ip
     - do: *teardown-bosh-lite
 
 - name: test-bootstrap
@@ -814,14 +779,6 @@ jobs:
         BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
         BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
         TEST_SUITE_NAME: "bootstrap"
-    - task: delete-deployment
-      file: cf-mysql-ci/ci/tasks/delete-deployment-no-env-metadata/task.yml
-      params:
-        BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
-        BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
-        BOSH_DEPLOYMENT: pxc
-        BOSH_CA_CERT: bosh-lite-info/ca-cert
-        ENV_TARGET_FILE: bosh-lite-info/external-ip
     - do: *teardown-bosh-lite
 
 - name: test-failover
@@ -879,14 +836,6 @@ jobs:
       BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
       BOSH_DEPLOYMENT: pxc
       TEST_SUITE_NAME: "failover"
-  - task: delete-deployment
-    file: cf-mysql-ci/ci/tasks/delete-deployment-no-env-metadata/task.yml
-    params:
-      BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
-      BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
-      BOSH_DEPLOYMENT: pxc
-      BOSH_CA_CERT: bosh-lite-info/ca-cert
-      ENV_TARGET_FILE: bosh-lite-info/external-ip
   - do: *teardown-bosh-lite
 
 - name: test-no-remote-admin-access
@@ -933,14 +882,6 @@ jobs:
       BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
       BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
       TEST_SUITE_NAME: "no_remote_access"
-  - task: delete-deployment
-    file: cf-mysql-ci/ci/tasks/delete-deployment-no-env-metadata/task.yml
-    params:
-      BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
-      BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
-      BOSH_DEPLOYMENT: pxc
-      BOSH_CA_CERT: bosh-lite-info/ca-cert
-      ENV_TARGET_FILE: bosh-lite-info/external-ip
   - do: *teardown-bosh-lite
 
 - name: test-scaling
@@ -996,14 +937,6 @@ jobs:
         BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
         BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
         TEST_SUITE_NAME: "scaling"
-    - task: delete-deployment
-      file: cf-mysql-ci/ci/tasks/delete-deployment-no-env-metadata/task.yml
-      params:
-        BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
-        BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
-        BOSH_DEPLOYMENT: pxc
-        BOSH_CA_CERT: bosh-lite-info/ca-cert
-        ENV_TARGET_FILE: bosh-lite-info/external-ip
     - do: *teardown-bosh-lite
 
 - name: test-tls
@@ -1059,14 +992,6 @@ jobs:
         BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
         BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
         TEST_SUITE_NAME: "tls"
-    - task: delete-deployment
-      file: cf-mysql-ci/ci/tasks/delete-deployment-no-env-metadata/task.yml
-      params:
-        BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
-        BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
-        BOSH_DEPLOYMENT: pxc
-        BOSH_CA_CERT: bosh-lite-info/ca-cert
-        ENV_TARGET_FILE: bosh-lite-info/external-ip
     - do: *teardown-bosh-lite
 
 - name: test-single-node
@@ -1112,14 +1037,6 @@ jobs:
       BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
       BOSH_DEPLOYMENT: pxc
       INSTANCE: mysql/0
-  - task: delete-deployment
-    file: cf-mysql-ci/ci/tasks/delete-deployment-no-env-metadata/task.yml
-    params:
-      BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
-      BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
-      BOSH_DEPLOYMENT: pxc
-      BOSH_CA_CERT: bosh-lite-info/ca-cert
-      ENV_TARGET_FILE: bosh-lite-info/external-ip
   - do: *teardown-bosh-lite
 
 - name: test-xenial
