@@ -358,8 +358,8 @@ jobs:
         BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
     - aggregate:
       - task: create-dns
-        attempts: 5
         file: cf-mysql-ci/ci/tasks/create-dns/task.yml
+        attempts: 5
       - task: delete-stemcell
         file: cf-mysql-ci/ci/tasks/delete-stemcell/task.yml
       - do:
@@ -400,8 +400,8 @@ jobs:
   - task: test-galera-encryption
     file: cf-mysql-ci/ci/tasks/test-galera-encryption/task.yml
   - task: run-cats
-    attempts: 3
     file: cf-mysql-ci/ci/tasks/run-cats/task.yml
+    attempts: 3
   - task: delete-cf-deployment
     file: cf-mysql-ci/ci/tasks/delete-deployment-no-env-metadata/task.yml
     params:
@@ -418,8 +418,8 @@ jobs:
       file: cf-mysql-ci/ci/tasks/destroy-bosh-lite-terraform/task.yml
       input_mapping: {deployments: deployments-terraformed}
     - task: delete-dns
-      attempts: 5
       file: cf-mysql-ci/ci/tasks/delete-dns/task.yml
+      attempts: 5
 
 - name: test-migrate-to-pxc
   plan:
@@ -461,8 +461,8 @@ jobs:
         params:
           acquire: true
       - task: compile-cf-mysql-release
-        input_mapping: {release-tarball: cf-mysql-release-candidate}
         file: cf-mysql-ci/ci/tasks/compile-release/task.yml
+        input_mapping: {release-tarball: cf-mysql-release-candidate}
         params:
           BOSH_CLIENT: ((concourse-compilation-director/Notes/BOSH_CLIENT))
           BOSH_CLIENT_SECRET: ((concourse-compilation-director/Notes/BOSH_CLIENT_SECRET))
@@ -518,8 +518,8 @@ jobs:
   - task: check-if-org-exists-pxc
     file: cf-mysql-ci/ci/tasks/check-if-org-exists-pxc/task.yml
   - task: run-cats
-    attempts: 3
     file: cf-mysql-ci/ci/tasks/run-cats/task.yml
+    attempts: 3
   # redeploy to test bosh lifecycle scripts
   - put: cf-bosh-deployment
     params:
@@ -584,9 +584,9 @@ jobs:
         params:
           acquire: true
       - task: compile-last-pxc-release
+        file: cf-mysql-ci/ci/tasks/compile-release/task.yml
         input_mapping: {release-tarball: last-pxc-release-bosh-release}
         output_mapping: {compiled-release-tarball: compiled-last-pxc-release}
-        file: cf-mysql-ci/ci/tasks/compile-release/task.yml
         params:
           BOSH_CLIENT: ((concourse-compilation-director/Notes/BOSH_CLIENT))
           BOSH_CLIENT_SECRET: ((concourse-compilation-director/Notes/BOSH_CLIENT_SECRET))
