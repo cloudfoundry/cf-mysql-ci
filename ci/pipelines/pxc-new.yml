@@ -210,10 +210,10 @@ jobs:
   - task: gate-on-stemcells
     file: cf-mysql-ci/ci/tasks/create-and-compile-release/gate-on-stemcells.yml
   - task: gate-on-xenial-stemcells
+    file: cf-mysql-ci/ci/tasks/create-and-compile-release/gate-on-stemcells.yml
     input_mapping:
       gcp-bosh-stemcell: xenial-gcp-bosh-stemcell
       bosh-lite-stemcell: xenial-bosh-lite-stemcell
-    file: cf-mysql-ci/ci/tasks/create-and-compile-release/gate-on-stemcells.yml
 #  - put: version
 #    params:
 #      pre: rc
@@ -231,9 +231,9 @@ jobs:
       passed: [bump-version]
   - aggregate:
     - task: test-unit
+      file: cf-mysql-ci/ci/tasks/test-unit/task.yml
       input_mapping:
         mysql-release: pxc-release
-      file: cf-mysql-ci/ci/tasks/test-unit/task.yml
     - task: test-integration
       file: cf-mysql-ci/ci/tasks/run-galera-init-integration/task.yml
       privileged: true
@@ -1145,13 +1145,13 @@ jobs:
       trigger: true
     - get: bpm-release
   - task: gate-on-stemcells
-    input_mapping: {bosh-lite-stemcell: stemcell}
     file: cf-mysql-ci/ci/tasks/create-and-compile-release/gate-on-stemcells.yml
+    input_mapping: {bosh-lite-stemcell: stemcell}
   - aggregate:
     - do:
       - task: create-release
-        attempts: 3
         file: cf-mysql-ci/ci/tasks/create-release/task.yml
+        attempts: 3
         input_mapping: {release-repo: pxc-release}
         params:
           RELEASE_NAME: pxc
