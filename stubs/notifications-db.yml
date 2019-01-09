@@ -1,6 +1,0 @@
-property_overrides:
-  mysql:
-    seeded_databases:
-    - name: notifications_db
-      username: notifications-user
-      password: notifications-password
