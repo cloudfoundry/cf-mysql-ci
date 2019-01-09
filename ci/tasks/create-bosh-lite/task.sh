@@ -16,8 +16,6 @@ stemcell_dir="${workspace_dir}/stemcell"
 : "${SUBNETWORK}"
 : "${BOSH_CLIENT_SECRET}"
 
-source "cf-mysql-ci/ci/tasks/create-bosh-lite/create-release-override.sh"
-
 bosh_lite_dir="${DEPLOYMENTS_DIR}/bosh-lite-gcp"
 
 pushd "${bosh_lite_dir}" > /dev/null
