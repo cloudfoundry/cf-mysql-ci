@@ -21,6 +21,6 @@ params:
   AWS_SECRET_ACCESS_KEY: ~
 
 run:
-  path: cf-mysql-ci/scripts/update-acceptance-tests/build-and-upload-cipher-finder-jar.sh
+  path: cf-mysql-ci/ci/tasks/build-and-upload-cipher-finder-jar/task.sh
 
 
