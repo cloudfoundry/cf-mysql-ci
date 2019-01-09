@@ -751,7 +751,6 @@ jobs:
       inputs:
       - name: cf-mysql-ci
       - name: url
-      - name: varstore
       run:
         path: cf-mysql-ci/scripts/tls/verify-tls-enabled
   - task: run-smoke-tests
