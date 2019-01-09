@@ -2,8 +2,7 @@
 
 set -eux
 
-MY_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-WORKSPACE_DIR="$( cd "${MY_DIR}/../../../" && pwd )"
+WORKSPACE_DIR="$(pwd)"
 RELEASE_DIR="$(cd "${WORKSPACE_DIR}/cf-mysql-release" && pwd )"
 CHANGED_RELEASE_DIR="$(cd "${WORKSPACE_DIR}/cf-mysql-release-changed" && pwd )"
 
