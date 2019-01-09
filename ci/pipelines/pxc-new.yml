@@ -403,6 +403,9 @@ jobs:
     file: cf-mysql-ci/ci/tasks/run-cats/task.yml
     attempts: 3
   - do: &teardown-bosh-lite
+    - task: destroy-bosh-lite
+      file: cf-mysql-ci/ci/tasks/destroy-bosh-lite/task.yml
+      input_mapping: {bosh-lite-info: bosh-lite-info-stemcell-deleted}
     - task: destroy-terraform
       file: cf-mysql-ci/ci/tasks/destroy-bosh-lite-terraform/task.yml
       input_mapping: {deployments: deployments-terraformed}
