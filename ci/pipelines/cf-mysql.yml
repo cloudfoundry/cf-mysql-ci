@@ -391,7 +391,7 @@ jobs:
       passed: [test-unit]
       trigger: true
   - task: gate-on-stemcells
-    file: cf-mysql-ci/ci/tasks/create-and-compile-release/gate-on-stemcells.yml
+    file: cf-mysql-ci/ci/tasks/gate-on-stemcells/task.yml
   - &create-release
     task: create-release
     file: cf-mysql-ci/ci/tasks/create-release/task.yml
@@ -1437,7 +1437,7 @@ jobs:
       trigger: true
   - task: gate-on-stemcells
     input_mapping: {bosh-lite-stemcell: stemcell}
-    file: cf-mysql-ci/ci/tasks/create-and-compile-release/gate-on-stemcells.yml
+    file: cf-mysql-ci/ci/tasks/gate-on-stemcells/task.yml
   - aggregate:
     - do:
       - task: apply-terraform

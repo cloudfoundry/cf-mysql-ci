@@ -8,8 +8,8 @@ image_resource:
 
 inputs:
 - name: bosh-lite-stemcell
-- name: gcp-bosh-stemcell
 - name: cf-mysql-ci
+- name: gcp-bosh-stemcell
 
 run:
-  path: cf-mysql-ci/scripts/create-and-compile-release/gate-on-stemcells
+  path: cf-mysql-ci/ci/tasks/gate-on-stemcells/task.sh
