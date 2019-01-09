@@ -1698,7 +1698,7 @@ jobs:
         repository: cf-mysql-deployment-release-candidate
         merge: true
     - task: update-cf-mysql-deployment-with-new-release
-      file: cf-mysql-ci/ci/tasks/finalize-cf-mysql-deployment/update-cf-mysql-deployment-with-new-release.yml
+      file: cf-mysql-ci/ci/tasks/update-cf-mysql-deployment-with-new-release/task.yml
     - task: configure-tag-name
       file: cf-mysql-ci/ci/tasks/configure-tag-name/task.yml
     - put: cf-mysql-deployment-master
