@@ -671,14 +671,6 @@ jobs:
         path: cf-mysql-ci/scripts/scaling/scaling-test
   - &ondemand-teardown
       do:
-      - task: delete-deployment
-        file: cf-mysql-ci/ci/tasks/delete-deployment-no-env-metadata/task.yml
-        params:
-          BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
-          BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
-          BOSH_CA_CERT: bosh-lite-info/ca-cert
-          BOSH_DEPLOYMENT: cf-mysql
-          ENV_TARGET_FILE: bosh-lite-info/external-ip
       - task: destroy-bosh-lite
         file: cf-mysql-ci/ci/tasks/destroy-bosh-lite/task.yml
         input_mapping: {bosh-lite-info: bosh-lite-info-stemcell-deleted}
@@ -842,22 +834,6 @@ jobs:
       BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
       BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
       BOSH_DEPLOYMENT: cf-mysql
-  - task: delete-cf-mysql-deployment
-    file: cf-mysql-ci/ci/tasks/delete-deployment-no-env-metadata/task.yml
-    params:
-      BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
-      BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
-      BOSH_CA_CERT: bosh-lite-info/ca-cert
-      BOSH_DEPLOYMENT: cf-mysql
-      ENV_TARGET_FILE: bosh-lite-info/external-ip
-  - task: delete-cf-deployment
-    file: cf-mysql-ci/ci/tasks/delete-deployment-no-env-metadata/task.yml
-    params:
-      BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
-      BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
-      BOSH_DEPLOYMENT: cf
-      BOSH_CA_CERT: bosh-lite-info/ca-cert
-      ENV_TARGET_FILE: bosh-lite-info/external-ip
   - task: destroy-bosh-lite
     file: cf-mysql-ci/ci/tasks/destroy-bosh-lite/task.yml
     input_mapping: {bosh-lite-info: bosh-lite-info-stemcell-deleted}
@@ -997,22 +973,6 @@ jobs:
         NEW_STYLE_PROXY_URL: true
       run:
         path: cf-mysql-ci/scripts/failover/failover-test
-  - task: delete-cf-mysql-deployment
-    file: cf-mysql-ci/ci/tasks/delete-deployment-no-env-metadata/task.yml
-    params:
-      BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
-      BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
-      BOSH_CA_CERT: bosh-lite-info/ca-cert
-      BOSH_DEPLOYMENT: cf-mysql
-      ENV_TARGET_FILE: bosh-lite-info/external-ip
-  - task: delete-cf-deployment
-    file: cf-mysql-ci/ci/tasks/delete-deployment-no-env-metadata/task.yml
-    params:
-      BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
-      BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
-      BOSH_DEPLOYMENT: cf
-      BOSH_CA_CERT: bosh-lite-info/ca-cert
-      ENV_TARGET_FILE: bosh-lite-info/external-ip
   - task: destroy-bosh-lite
     file: cf-mysql-ci/ci/tasks/destroy-bosh-lite/task.yml
     input_mapping: {bosh-lite-info: bosh-lite-info-stemcell-deleted}
