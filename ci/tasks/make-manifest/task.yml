@@ -3,8 +3,12 @@ image_resource:
     repository: cloudfoundry/cf-mysql-ci
   type: docker-image
 inputs:
+- name: bosh-lite-info
 - name: cf-mysql-ci
 - name: cf-mysql-deployment
+- name: url
+- name: varstore
+
 outputs:
 - name: deployment-manifest
 params:

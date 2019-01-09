@@ -432,6 +432,8 @@ jobs:
         BOSH_DEPLOYMENT: cf-mysql
   - task: delete-deployment
     file: cf-mysql-ci/ci/tasks/delete-deployment/task.yml
+    input_mapping:
+      environment: full-bosh-environment
     params:
       ENV_REPO: deployments-configuration
       ENV_TARGET_FILE: full-bosh-environment/name
@@ -713,24 +715,12 @@ jobs:
             BOSH_CA_CERT_PATH: bosh-lite-info/ca-cert
             CLOUD_CONFIG: cloud-config/cloud-config.yml
     - task: make-manifest
-      config:
-        platform: linux
-        image_resource: *image_resource
-        inputs:
-        - name: bosh-lite-info
-        - name: varstore
-        - name: cf-mysql-ci
-        - name: cf-mysql-deployment
-        - name: url
-        outputs:
-        - name: deployment-manifest
-        params:
-          OUTPUT_FILE: deployment-manifest/deployment.yml
-          ADD_BROKERS: true
-          ADD_TLS: true
-          DISABLE_CROSS_DEPLOYMENT_LINKS: false
-        run:
-          path: cf-mysql-ci/scripts/bosh-lite/make-manifest
+      file: cf-mysql-ci/ci/tasks/make-manifest/task.yml
+      params:
+        OUTPUT_FILE: deployment-manifest/deployment.yml
+        ADD_BROKERS: true
+        ADD_TLS: true
+        DISABLE_CROSS_DEPLOYMENT_LINKS: false
     - put: cf-bosh-deployment
       params:
         manifest: cf-deployment-manifest/cf.yml
@@ -845,23 +835,12 @@ jobs:
             BOSH_CA_CERT_PATH: bosh-lite-info/ca-cert
             CLOUD_CONFIG: cloud-config/cloud-config.yml
     - task: make-manifest
-      config:
-        platform: linux
-        image_resource: *image_resource
-        inputs:
-        - name: varstore
-        - name: cf-mysql-ci
-        - name: cf-mysql-deployment
-        - name: url
-        outputs:
-        - name: deployment-manifest
-        params:
-          OUTPUT_FILE: deployment-manifest/deployment.yml
-          ADD_BROKERS: true
-          ENABLE_REMOTE_ADMIN_ACCESS: true
-          DISABLE_CROSS_DEPLOYMENT_LINKS: false
-        run:
-          path: cf-mysql-ci/scripts/bosh-lite/make-manifest
+      file: cf-mysql-ci/ci/tasks/make-manifest/task.yml
+      params:
+        OUTPUT_FILE: deployment-manifest/deployment.yml
+        ADD_BROKERS: true
+        ENABLE_REMOTE_ADMIN_ACCESS: true
+        DISABLE_CROSS_DEPLOYMENT_LINKS: false
     - put: cf-bosh-deployment
       params:
         manifest: cf-deployment-manifest/cf.yml
