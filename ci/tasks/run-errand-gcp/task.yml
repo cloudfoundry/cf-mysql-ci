@@ -1,0 +1,23 @@
+platform: linux
+
+image_resource:
+  source:
+    repository: cloudfoundry/cf-mysql-ci
+  type: docker-image
+
+inputs:
+- name: cf-mysql-ci
+- name: full-bosh-environment
+- name: deployments-configuration
+
+params:
+  ENV_REPO:
+  ENV_TARGET_FILE:
+  ENV_METADATA:
+  ERRAND:
+  SKIP_IF_NO_DEPLOYMENT:
+  BOSH_DEPLOYMENT:
+
+run:
+  path: cf-mysql-ci/ci/tasks/run-errand-gcp/task.sh
+
