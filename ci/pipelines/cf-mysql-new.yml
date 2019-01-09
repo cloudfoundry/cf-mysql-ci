@@ -248,12 +248,12 @@ resources:
     secret_access_key: ((core-services-ci-credentials/Notes/cf-mysql-ci-aws-secret-access-key))
     key: version
 
-- name: weekly-trigger
-  type: time
-  source:
-    days:
-    - Monday
-    interval: 24h
+#- name: weekly-trigger
+#  type: time
+#  source:
+#    days:
+#    - Monday
+#    interval: 24h
 
 - name: s3-resource-final-release
   type: s3
@@ -326,8 +326,8 @@ jobs:
   plan:
   - aggregate:
     - get: cf-mysql-ci
-    - get: weekly-trigger
-      trigger: true
+#    - get: weekly-trigger
+#      trigger: true
     - get: cf-mysql-release
       trigger: true
     - get: cf-mysql-deployment

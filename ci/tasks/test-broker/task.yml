@@ -10,4 +10,4 @@ inputs:
 params:
   RAILS_ENV: test
 run:
-  path: cf-mysql-ci/tasks/test-broker/task.sh
+  path: cf-mysql-ci/ci/tasks/test-broker/task.sh
