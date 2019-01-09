@@ -1,5 +1,5 @@
 #!/bin/bash
+DIR=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
+CI_DIR=$(git -C "${DIR}" rev-parse --show-toplevel)
 
-set -eux
-
-echo "v$(cat bosh-io-release-cf-mysql-release/version)" > tag-name/name
+${CI_DIR}/ci/tasks/configure-tag-name/task.sh
