@@ -2,8 +2,7 @@
 
 set -eux
 
-MY_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-WORKSPACE_DIR="${MY_DIR}/../../../"
+WORKSPACE_DIR="$(pwd)"
 RELEASE_DIR="${WORKSPACE_DIR}/pxc-release"
 : "${TEST_SUITE_NAME:?TEST_SUITE_NAME must be specified}"
 
