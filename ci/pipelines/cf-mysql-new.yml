@@ -977,20 +977,10 @@ jobs:
       source_file: bosh-lite-info/bosh-deployment-resource-source-file
 
   - task: persistence-test-data-read
-    config:
-      platform: linux
-      image_resource:
-        type: docker-image
-        source:
-          repository: pivotalcf/mysql-restore
-      inputs:
-      - name: bosh-lite-info
-      - name: cf-mysql-ci
-      params:
-        ENV_TARGET_FILE: bosh-lite-info/external-ip
-        MYSQL_VM_IP: 10.244.7.3
-      run:
-        path: cf-mysql-ci/scripts/persistence/verify-db-matches-test-data
+    file: cf-mysql-ci/ci/tasks/verify-db-matches-persistence-test-data/task.yml
+    params:
+      ENV_TARGET_FILE: bosh-lite-info/external-ip
+      MYSQL_VM_IP: 10.244.7.3
 
   - task: run-smoke-tests
     file: cf-mysql-ci/ci/tasks/run-errand/task.yml
@@ -1034,7 +1024,7 @@ jobs:
       BOSH_DEPLOYMENT: cf-mysql
       ERRAND: bootstrap
   - task: persistence-test-data-read
-    file: cf-mysql-ci/ci/tasks/verify-db-matches-test-data/task.yml
+    file: cf-mysql-ci/ci/tasks/verify-db-matches-persistence-test-data/task.yml
     params:
       ENV_TARGET_FILE: bosh-lite-info/external-ip
   - *ondemand-teardown
