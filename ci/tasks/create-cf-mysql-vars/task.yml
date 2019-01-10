@@ -1,0 +1,18 @@
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: cloudfoundry/cf-mysql-ci
+
+inputs:
+- name: deployments-core-services
+- name: cf-mysql-ci
+- name: environment
+
+outputs:
+- name: cf-mysql-vars
+
+run:
+  path: cf-mysql-ci/ci/tasks/create-cf-mysql-vars/task.sh
+
