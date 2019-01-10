@@ -2,7 +2,7 @@
 
 set -eux
 
-: "${TEST_TYPE:?}"
+TEST_TYPE="acceptance"
 
 MY_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 CI_DIR="$( cd "${MY_DIR}/../" && pwd )"

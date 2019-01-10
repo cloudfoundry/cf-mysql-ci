@@ -1,0 +1,16 @@
+platform: linux
+
+image_resource:
+  source:
+    repository: cloudfoundry/cf-mysql-ci
+  type: docker-image
+
+inputs:
+  - name: cf-mysql-release
+  - name: cf-mysql-ci
+  - name: deployments-core-services
+  - name: environment
+
+run:
+  path: cf-mysql-ci/ci/tasks/acceptance-tests/task.sh
+

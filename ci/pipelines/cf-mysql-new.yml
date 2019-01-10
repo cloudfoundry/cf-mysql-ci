@@ -480,22 +480,11 @@ jobs:
       ERRAND: smoke-tests
       BOSH_DEPLOYMENT: cf-mysql
   - task: acceptance-test
+    file: cf-mysql-ci/ci/tasks/acceptance-tests/task.yml
     attempts: 3
     input_mapping:
       deployments-core-services: deployments-configuration
       environment: full-bosh-environment
-    config:
-      platform: linux
-      image_resource: *image_resource
-      inputs:
-        - name: cf-mysql-release
-        - name: cf-mysql-ci
-        - name: deployments-core-services
-        - name: environment
-      params:
-        TEST_TYPE: acceptance
-      run:
-        path: cf-mysql-ci/scripts/acceptance-tests
   - try:
       task: run-deregister-and-purge-instances
       file: cf-mysql-ci/ci/tasks/run-errand-gcp/task.yml
@@ -581,7 +570,10 @@ jobs:
   - task: run-scaling-tests
     config:
       platform: linux
-      image_resource: *image_resource
+      image_resource: &image_resource
+        type: docker-image
+        source:
+          repository: cloudfoundry/cf-mysql-ci
       inputs:
         - name: cf-mysql-ci
         - name: bosh-lite-info
