@@ -1,0 +1,13 @@
+platform: linux
+image_resource:
+  type: docker-image
+  source:
+    repository: cloudfoundry/cf-mysql-ci
+
+inputs:
+- name: cf-mysql-ci
+- name: url
+
+run:
+  path: cf-mysql-ci/ci/tasks/verify-tls-enabled/task.sh
+

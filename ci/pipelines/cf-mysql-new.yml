@@ -724,14 +724,7 @@ jobs:
       BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
       BOSH_DEPLOYMENT: cf-mysql
   - task: test-tls
-    config:
-      platform: linux
-      image_resource: *image_resource
-      inputs:
-      - name: cf-mysql-ci
-      - name: url
-      run:
-        path: cf-mysql-ci/scripts/tls/verify-tls-enabled
+    file: cf-mysql-ci/ci/tasks/verify-tls-enabled/task.yml
   - task: run-smoke-tests
     file: cf-mysql-ci/ci/tasks/run-errand/task.yml
     params:

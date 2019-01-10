@@ -5,9 +5,9 @@ set -o pipefail
 
 gem install mysql2 json
 
-MY_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-CI_DIR="${MY_DIR}/../../"
-WORKSPACE_DIR="${CI_DIR}/../"
+WORKSPACE_DIR="$(pwd)"
+CI_DIR="${WORKSPACE_DIR}/cf-mysql-ci"
+MY_DIR="${CI_DIR}/ci/tasks/verify-tls-enabled"
 
 source ${CI_DIR}/scripts/utils.sh
 
