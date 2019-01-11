@@ -612,7 +612,7 @@ jobs:
       stemcells:
       - stemcell/*.tgz
       source_file: bosh-lite-info/bosh-deployment-resource-source-file
-  - task: verify-db-matches-test-data
+  - task: verify-db-matches-upgrade-test-data
     file: cf-mysql-ci/ci/tasks/verify-db-matches-upgrade-test-data/task.yml
   - task: smoke-tests
     file: cf-mysql-ci/ci/tasks/run-errand/task.yml
