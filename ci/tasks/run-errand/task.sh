@@ -2,10 +2,10 @@
 
 set -eux
 
-ci_dir="cf-mysql-ci"
-WORKSPACE_DIR="$(pwd)/${ci_dir}"
+WORKSPACE_DIR="$(pwd)"
+ci_repo_dir="${WORKSPACE_DIR}/cf-mysql-ci"
 
-source "${ci_dir}/scripts/utils.sh"
+source "${ci_repo_dir}/scripts/utils.sh"
 
 : "${ENV_TARGET_FILE:?}"
 : "${ERRAND:?}"
@@ -27,7 +27,7 @@ export BOSH_CLIENT
 BOSH_CLIENT_SECRET=${BOSH_CLIENT_SECRET:-"$(jq_val "bosh_password" "${ENV_METADATA}")"}
 export BOSH_CLIENT_SECRET
 
-BOSH_CA_CERT=${BOSH_CA_CERT_PATH:-"${WORKSPACE_DIR}/${ENV_REPO}/$(jq_val "env" "${ENV_METADATA}")/certs/rootCA.pem"}
+BOSH_CA_CERT=${BOSH_CA_CERT_PATH:-"${ci_repo_dir}/${ENV_REPO}/$(jq_val "env" "${ENV_METADATA}")/certs/rootCA.pem"}
 export BOSH_CA_CERT
 
 BOSH_DEPLOYMENT=${BOSH_DEPLOYMENT:-"${DEPLOYMENT_NAME}"}
