@@ -4,9 +4,8 @@ set -eux
 
 TEST_TYPE="acceptance"
 
-MY_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-CI_DIR="$( cd "${MY_DIR}/../" && pwd )"
-WORKSPACE_DIR="$( cd "${MY_DIR}/../../" && pwd )"
+WORKSPACE_DIR="$(pwd)"
+CI_DIR="${WORKSPACE_DIR}/cf-mysql-ci"
 RELEASE_DIR="$(cd "${WORKSPACE_DIR}/cf-mysql-release" && pwd )"
 
 export PATH=$PATH:/usr/lib/chromium-browser/
