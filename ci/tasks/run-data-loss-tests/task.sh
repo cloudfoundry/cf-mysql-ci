@@ -1,9 +1,12 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
 set -eux
 
-MY_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-CI_DIR="$( cd ${MY_DIR}/../../ && pwd )"
-WORKSPACE_DIR="$( cd ${MY_DIR}/../../.. && pwd )"
+WORKSPACE_DIR="$( pwd )"
+
+CI_DIR="${WORKSPACE_DIR}/cf-mysql-ci"
+TEST_DATA_SCHEMA_PATH="${CI_DIR}/ci/tasks/run-data-lost-tests/setup-test-data-schema.sql"
+
 
 : "${ENV_TARGET_FILE:?}"
 : "${BOSH_DEPLOYMENT:?}"
@@ -53,7 +56,7 @@ function write_data_to_overflow_gcache() {
   mysql --host=${MYSQL_HOST} \
     --port=${MYSQL_PORT} \
     --user=root \
-    --password=password < ${MY_DIR}/setup-test-data-schema.sql
+    --password=password < ${TEST_DATA_SCHEMA_PATH}
 
   for i in `seq 1 ${GCACHE_SIZE_PLUS_ONE}`;
   do

@@ -997,20 +997,10 @@ jobs:
       ENABLE_REMOTE_ADMIN_ACCESS: true
   - *ondemand-deploy-manifest
   - task: run-data-loss-tests
-    config:
-      platform: linux
-      image_resource: *image_resource
-      inputs:
-        - name: cf-mysql-ci
-        - name: bosh-lite-info
-        - name: cf-mysql-release
-      params:
-        ENV_TARGET_FILE: bosh-lite-info/director-url
-        BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
-        BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
-        BOSH_DEPLOYMENT: cf-mysql
-      run:
-        path: cf-mysql-ci/scripts/data-loss/force-sst-test
+    file: cf-mysql-ci/ci/tasks/run-data-loss-tests/task.yml
+    params:
+      BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
+      BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
   - task: run-rejoin-unsafe-errand
     file: cf-mysql-ci/ci/tasks/run-errand/task.yml
     params:
@@ -1031,20 +1021,10 @@ jobs:
       ENABLE_REMOTE_ADMIN_ACCESS: true
   - *ondemand-deploy-manifest
   - task: run-data-loss-tests # leaves cluster in broken state with node z2 down
-    config:
-      platform: linux
-      image_resource: *image_resource
-      inputs:
-        - name: cf-mysql-ci
-        - name: bosh-lite-info
-        - name: cf-mysql-release
-      params:
-        ENV_TARGET_FILE: bosh-lite-info/director-url
-        BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
-        BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
-        BOSH_DEPLOYMENT: cf-mysql
-      run:
-        path: cf-mysql-ci/scripts/data-loss/force-sst-test
+    file: cf-mysql-ci/ci/tasks/run-data-loss-tests/task.yml
+    params:
+      BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
+      BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
   - task: make-manifest-with-interruptor-disabled
     file: cf-mysql-ci/ci/tasks/make-manifest/task.yml
     params:
