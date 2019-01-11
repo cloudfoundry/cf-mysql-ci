@@ -843,23 +843,15 @@ jobs:
       BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
       BOSH_DEPLOYMENT: cf-mysql
   - task: run-failover-tests
-    config:
-      platform: linux
-      image_resource: *image_resource
-      inputs:
-        - name: cf-mysql-ci
-        - name: bosh-lite-info
-        - name: cf-mysql-release
-      params:
-        BOSH_CA_CERT_PATH: bosh-lite-info/ca-cert
-        BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
-        BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
-        ENV_TARGET_FILE: bosh-lite-info/director-url
-        BOSH_LITE_SSH_KEY: ((core-services-ci-credentials/Notes/bosh-lite-private-key))
-        BOSH_DEPLOYMENT: cf-mysql
-        NEW_STYLE_PROXY_URL: true
-      run:
-        path: cf-mysql-ci/scripts/failover/failover-test
+    file: cf-mysql-ci/ci/tasks/failover-test/task.yml
+    params:
+      BOSH_CA_CERT_PATH: bosh-lite-info/ca-cert
+      BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
+      BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
+      ENV_TARGET_FILE: bosh-lite-info/director-url
+      BOSH_LITE_SSH_KEY: ((core-services-ci-credentials/Notes/bosh-lite-private-key))
+      BOSH_DEPLOYMENT: cf-mysql
+      NEW_STYLE_PROXY_URL: true
   - task: destroy-bosh-lite
     file: cf-mysql-ci/ci/tasks/destroy-bosh-lite/task.yml
     input_mapping: {bosh-lite-info: bosh-lite-info-stemcell-deleted}

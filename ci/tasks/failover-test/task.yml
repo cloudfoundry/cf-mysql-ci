@@ -1,0 +1,24 @@
+platform: linux
+
+image_resource:
+  source:
+    repository: cloudfoundry/cf-mysql-ci
+  type: docker-image
+
+inputs:
+  - name: cf-mysql-ci
+  - name: bosh-lite-info
+  - name: cf-mysql-release
+
+params:
+  BOSH_CA_CERT_PATH:
+  BOSH_CLIENT:
+  BOSH_CLIENT_SECRET:
+  ENV_TARGET_FILE:
+  BOSH_LITE_SSH_KEY:
+  BOSH_DEPLOYMENT:
+  NEW_STYLE_PROXY_URL:
+
+run:
+  path: cf-mysql-ci/ci/tasks/failover-test/task.sh
+
