@@ -2,11 +2,8 @@
 set -eux
 
 set_env(){
-  MY_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-  CI_DIR="$( cd "${MY_DIR}/../../" && pwd )"
-  WORKSPACE_DIR="$( cd "${CI_DIR}/.." && pwd )"
-
-  source "${CI_DIR}/scripts/utils.sh"
+  WORKSPACE_DIR="$(pwd)"
+  source "./cf-mysql-ci/scripts/utils.sh"
 
   : "${ENV_TARGET_FILE:?}"
   : "${BOSH_CLIENT:?}"

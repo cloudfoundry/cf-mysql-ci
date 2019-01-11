@@ -1,0 +1,20 @@
+platform: linux
+
+image_resource:
+  source:
+    repository: cloudfoundry/cf-mysql-ci
+  type: docker-image
+
+inputs:
+- name: cf-mysql-ci
+- name: bosh-lite-info
+
+params:
+  ENV_TARGET_FILE:
+  BOSH_CLIENT:
+  BOSH_CLIENT_SECRET:
+  BOSH_DEPLOYMENT:
+
+run:
+  path: cf-mysql-ci/ci/tasks/break-mysql-cluster/task.sh
+
