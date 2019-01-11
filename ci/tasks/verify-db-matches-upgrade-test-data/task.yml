@@ -9,5 +9,5 @@ inputs:
   - name: cf-mysql-ci
   - name: bosh-lite-info
 run:
-  path: cf-mysql-ci/ci/tasks/verify-db-matches-test-data/task.sh
+  path: cf-mysql-ci/ci/tasks/verify-db-matches-upgrade-test-data/task.sh
 
