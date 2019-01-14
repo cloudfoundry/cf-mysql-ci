@@ -5,7 +5,7 @@ set -eux
 WORKSPACE_DIR="$( pwd )"
 
 CI_DIR="${WORKSPACE_DIR}/cf-mysql-ci"
-TEST_DATA_SCHEMA_PATH="${CI_DIR}/ci/tasks/run-data-lost-tests/setup-test-data-schema.sql"
+TEST_DATA_SCHEMA_PATH="${CI_DIR}/ci/tasks/run-data-loss-tests/setup-test-data-schema.sql"
 
 
 : "${ENV_TARGET_FILE:?}"
