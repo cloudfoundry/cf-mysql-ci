@@ -23,4 +23,3 @@ params:
 run:
   path: cf-mysql-ci/ci/tasks/build-and-upload-cipher-finder-jar/task.sh
 
-

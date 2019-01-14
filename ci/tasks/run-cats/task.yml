@@ -1,14 +1,17 @@
 ---
 platform: linux
+
 image_resource:
   type: docker-image
   source:
     repository: relintdockerhubpushbot/cf-deployment-concourse-tasks
+
 inputs:
   - name: bosh-lite-info
   - name: cf-mysql-ci
   - name: cf-acceptance-tests
   - name: url
+
 run:
   path: cf-mysql-ci/ci/tasks/run-cats/task.sh
 

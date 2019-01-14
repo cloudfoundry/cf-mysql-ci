@@ -1,3 +1,4 @@
+---
 platform: linux
 
 image_resource:
@@ -18,3 +19,4 @@ params:
 
 run:
   path: cf-mysql-ci/ci/tasks/run-data-loss-tests/task.sh
+

@@ -1,5 +1,6 @@
 ---
 platform: linux
+
 image_resource:
   type: docker-image
   source:
@@ -11,6 +12,7 @@ inputs:
 - name: url
 - name: deployments
   path: deployments-core-services
+
 run:
   path: cf-mysql-ci/ci/tasks/delete-dns/task.sh
 

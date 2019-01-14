@@ -1,4 +1,6 @@
 ---
+platform: linux
+
 image_resource:
   type: docker-image
   source:
@@ -9,9 +11,10 @@ inputs:
 - name: bosh-lite-info
 - name: deployments
   path: deployments-core-services
+
 outputs:
 - name: url
+
 run:
   path: cf-mysql-ci/ci/tasks/create-dns/task.sh
 
-platform: linux

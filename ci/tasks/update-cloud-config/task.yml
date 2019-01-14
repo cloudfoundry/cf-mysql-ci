@@ -1,4 +1,6 @@
 ---
+platform: linux
+
 image_resource:
   type: docker-image
   source:
@@ -19,4 +21,3 @@ params:
 run:
   path: cf-mysql-ci/ci/tasks/update-cloud-config/task.sh
 
-platform: linux

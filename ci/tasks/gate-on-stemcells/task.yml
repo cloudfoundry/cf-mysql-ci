@@ -13,3 +13,4 @@ inputs:
 
 run:
   path: cf-mysql-ci/ci/tasks/gate-on-stemcells/task.sh
+

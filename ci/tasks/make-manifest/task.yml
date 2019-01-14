@@ -1,10 +1,10 @@
 ---
+platform: linux
+
 image_resource:
   source:
     repository: cloudfoundry/cf-mysql-ci
   type: docker-image
-
-platform: linux
 
 inputs:
 - name: bosh-lite-info
@@ -30,3 +30,4 @@ params:
 
 run:
   path: cf-mysql-ci/ci/tasks/make-manifest/task.sh
+

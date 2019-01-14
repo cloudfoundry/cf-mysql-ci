@@ -1,13 +1,18 @@
 ---
 platform: linux
+
 image_resource:
   type: docker-image
   source:
     repository: pivotalcf/mysql-restore
+
 inputs:
 - name: cf-mysql-release
 - name: cf-mysql-ci
+
 params:
   RAILS_ENV: test
+
 run:
   path: cf-mysql-ci/ci/tasks/test-broker/task.sh
+

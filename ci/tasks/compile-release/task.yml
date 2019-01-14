@@ -26,3 +26,4 @@ params:
 
 run:
   path: cf-mysql-ci/ci/tasks/compile-release/task.sh
+

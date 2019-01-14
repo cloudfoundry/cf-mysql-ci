@@ -1,3 +1,4 @@
+---
 platform: linux
 
 image_resource:
@@ -12,6 +13,7 @@ inputs:
 params:
   ENV_TARGET_FILE:
   MYSQL_VM_IP:
+
 run:
   path: cf-mysql-ci/ci/tasks/verify-db-matches-persistence-test-data/task.sh
 

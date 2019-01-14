@@ -1,5 +1,6 @@
 ---
 platform: linux
+
 image_resource:
   type: docker-image
   source:
@@ -20,3 +21,4 @@ params:
 
 run:
   path: cf-mysql-ci/ci/tasks/run-errand/task.sh
+

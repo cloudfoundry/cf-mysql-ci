@@ -15,3 +15,4 @@ outputs:
 
 run:
   path: cf-mysql-ci/ci/configure-tag-name/task.sh
+

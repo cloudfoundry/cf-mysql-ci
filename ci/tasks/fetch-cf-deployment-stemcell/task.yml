@@ -1,4 +1,6 @@
 ---
+platform: linux
+
 image_resource:
   type: docker-image
   source:
@@ -7,8 +9,10 @@ image_resource:
 inputs:
 - name: cf-deployment-rc
 - name: cf-mysql-ci
+
 outputs:
 - name: cf-deployment-rc-stemcell
+
 run:
   path: cf-mysql-ci/ci/tasks/fetch-cf-deployment-stemcell/task.sh
-platform: linux
+

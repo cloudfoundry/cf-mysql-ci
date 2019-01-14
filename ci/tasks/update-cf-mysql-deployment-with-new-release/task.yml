@@ -20,9 +20,10 @@ outputs:
 - name: updated-deployment-manifest # for runtime-ci binary
 - name: updated-cf-mysql-deployment-master
 
-run:
-  path: cf-mysql-ci/ci/tasks/update-cf-mysql-deployment-with-new-release/task.sh
-
 params:
   GIT_AUTHOR_NAME: Concourse CI
   GIT_AUTHOR_EMAIL: pivotal-core-services-eng@pivotal.io
+
+run:
+  path: cf-mysql-ci/ci/tasks/update-cf-mysql-deployment-with-new-release/task.sh
+
