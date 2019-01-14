@@ -20,5 +20,5 @@ params:
   NEW_STYLE_PROXY_URL:
 
 run:
-  path: cf-mysql-ci/ci/tasks/failover-test/task.sh
+  path: cf-mysql-ci/ci/tasks/run-failover-tests/task.sh
 

@@ -843,7 +843,7 @@ jobs:
       BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
       BOSH_DEPLOYMENT: cf-mysql
   - task: run-failover-tests
-    file: cf-mysql-ci/ci/tasks/failover-test/task.yml
+    file: cf-mysql-ci/ci/tasks/run-failover-tests/task.yml
     params:
       BOSH_CA_CERT_PATH: bosh-lite-info/ca-cert
       BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
