@@ -1,16 +1,24 @@
+---
 image_resource:
   source:
     repository: cloudfoundry/cf-mysql-ci
   type: docker-image
+
+platform: linux
+
 inputs:
 - name: bosh-lite-info
+  optional: true
 - name: cf-mysql-ci
 - name: cf-mysql-deployment
 - name: url
+  optional: true
 - name: varstore
+  optional: true
 
 outputs:
 - name: deployment-manifest
+
 params:
   ADD_BROKER: false
   ENABLE_INTERRUPTOR: false
@@ -19,6 +27,6 @@ params:
   NO_ARBITRATOR: false
   OUTPUT_FILE: deployment-manifest/deployment.yml
   SET_CF_MYSQL_HOST: false
-platform: linux
+
 run:
   path: cf-mysql-ci/ci/tasks/make-manifest/task.sh
