@@ -8,19 +8,9 @@ image_resource:
     tag: '2.3.1'
 
 inputs:
+- name: cf-mysql-ci
 - name: cf-mysql-release
 
 run:
-  path: bash
-  args:
-  - -c
-  - |
-    set -eux
-
-    gem install bundler-audit
-    bundle-audit update
-
-    cd cf-mysql-release/src/cf-mysql-broker
-
-    bundle-audit
+  path: cf-mysql-ci/ci/tasks/test-broker-dependencies/task.sh
 
