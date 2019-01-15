@@ -568,25 +568,7 @@ jobs:
       BOSH_DEPLOYMENT: cf-mysql
       ERRAND: smoke-tests
   - task: run-scaling-tests
-    config:
-      platform: linux
-      image_resource: &image_resource
-        type: docker-image
-        source:
-          repository: cloudfoundry/cf-mysql-ci
-      inputs:
-        - name: cf-mysql-ci
-        - name: bosh-lite-info
-        - name: cf-mysql-deployment
-      params:
-        BOSH_CA_CERT_PATH: bosh-lite-info/ca-cert
-        BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
-        BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
-        BOSH_DEPLOYMENT: cf-mysql
-        ENV_TARGET_FILE: bosh-lite-info/director-url
-        ENABLE_REMOTE_ADMIN_ACCESS: true
-      run:
-        path: cf-mysql-ci/scripts/scaling/scaling-test
+    file: cf-mysql-ci/ci/tasks/test-scaling/task.yml
   - &ondemand-teardown
       do:
       - task: destroy-bosh-lite
@@ -611,7 +593,10 @@ jobs:
   - task: run-arb-to-full-scaling-tests
     config:
       platform: linux
-      image_resource: *image_resource
+      image_resource: &image_resource
+        type: docker-image
+        source:
+          repository: cloudfoundry/cf-mysql-ci
       inputs:
         - name: cf-mysql-ci
         - name: bosh-lite-info
@@ -624,7 +609,7 @@ jobs:
         ENV_TARGET_FILE: bosh-lite-info/director-url
         ENABLE_REMOTE_ADMIN_ACCESS: true
       run:
-        path: cf-mysql-ci/scripts/scaling/scaling-arb-to-full-test
+        path: cf-mysql-ci/ci/tasks/test-scaling/scaling-arb-to-full-test
   - *ondemand-teardown
 
 ### TLS
