@@ -12,12 +12,13 @@ inputs:
   - name: cf-mysql-deployment
 
 params:
-  BOSH_CA_CERT_PATH: bosh-lite-info/ca-cert
-  BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
-  BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
-  BOSH_DEPLOYMENT: cf-mysql
-  ENV_TARGET_FILE: bosh-lite-info/director-url
-  ENABLE_REMOTE_ADMIN_ACCESS: true
+  BOSH_CA_CERT_PATH:
+  BOSH_CLIENT:
+  BOSH_CLIENT_SECRET:
+  BOSH_DEPLOYMENT:
+  ENV_TARGET_FILE:
+  ENABLE_REMOTE_ADMIN_ACCESS:
+  SCALE_TO_FULL_TEST: false
 
 run:
   path: cf-mysql-ci/ci/tasks/test-scaling/task.sh
