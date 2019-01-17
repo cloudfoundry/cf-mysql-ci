@@ -1,0 +1,26 @@
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: cloudfoundry/cf-mysql-ci
+
+inputs:
+  - name: cf-mysql-ci
+  - name: bosh-lite-info
+  - name: cf-mysql-deployment
+  - name: cf-mysql-release
+
+params:
+  MYSQL_TUNNEL_USERNAME:
+  ENV_TARGET_FILE:
+  BOSH_CLIENT:
+  BOSH_CLIENT_SECRET:
+  SSH_KEY_FILE:
+  BOSH_DEPLOYMENT:
+  MINIMAL_MODE:
+  ENABLE_REMOTE_ADMIN_ACCESS:
+
+run:
+  path: cf-mysql-ci/ci/tasks/verify-tuning/task.sh
+

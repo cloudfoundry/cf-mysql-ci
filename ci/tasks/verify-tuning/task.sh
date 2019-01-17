@@ -6,9 +6,9 @@ set -o pipefail
 tmpdir=$(mktemp -d /tmp/mysql_tuning.XXXXX)
 trap '{ rm -rf ${tmpdir}; }' EXIT
 
-MY_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-CI_DIR="$( cd "${MY_DIR}/../../" && pwd )"
-WORKSPACE_DIR="$( cd "${MY_DIR}/../../../" && pwd )"
+WORKSPACE_DIR="$(pwd)"
+CI_DIR="${WORKSPACE_DIR}/cf-mysql-ci/"
+MY_DIR="${CI_DIR}/ci/tasks/verify-tuning/"
 MYSQL_CONFIG=${MY_DIR}/mysql.config
 
 source ${CI_DIR}/scripts/utils.sh
