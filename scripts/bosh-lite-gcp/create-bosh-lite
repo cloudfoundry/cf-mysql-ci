@@ -129,6 +129,7 @@ export BOSH_CA_CERT=\${bosh_lite_info_dir}/ca-cert
 export BOSH_CLIENT=admin
 export BOSH_CLIENT_SECRET=${BOSH_CLIENT_SECRET}
 export BOSH_GW_PRIVATE_KEY=\${bosh_lite_info_dir}/jumpbox-private-key
+export BOSH_ALL_PROXY="ssh+socks5://jumpbox@\${BOSH_ENVIRONMENT}:22?private-key=\${BOSH_GW_PRIVATE_KEY}"
 
 credhub_api_url="https://\$(cat \${bosh_lite_info_dir}/external-ip | tr '\\n' '\\0'):8844/api/"
 echo "Logging into credhub"
