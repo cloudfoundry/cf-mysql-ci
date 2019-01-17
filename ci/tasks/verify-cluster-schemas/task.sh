@@ -1,9 +1,9 @@
 #!/bin/bash
 set -eu
 
-MY_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-CI_DIR="$( cd ${MY_DIR}/../../ && pwd )"
-WORKSPACE_DIR="$( cd ${MY_DIR}/../../.. && pwd )"
+WORKSPACE_DIR="$(pwd)"
+CI_DIR="${WORKSPACE_DIR}/cf-mysql-ci/"
+MY_DIR="${CI_DIR}/ci/task/verify-cluster-schemas/"
 MYSQL_CONFIG=${MY_DIR}/mysql.config
 
 : "${ENV_TARGET_FILE:?}"
