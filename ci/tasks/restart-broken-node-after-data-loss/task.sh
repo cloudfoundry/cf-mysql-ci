@@ -1,9 +1,7 @@
 #!/bin/bash
 set -eux
 
-MY_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-CI_DIR="$( cd ${MY_DIR}/../../ && pwd )"
-WORKSPACE_DIR="$( cd ${MY_DIR}/../../.. && pwd )"
+WORKSPACE_DIR="$(pwd)"
 
 : "${ENV_TARGET_FILE:?}"
 : "${BOSH_DEPLOYMENT:?}"
