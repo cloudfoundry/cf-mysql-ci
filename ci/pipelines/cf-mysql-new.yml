@@ -497,6 +497,8 @@ jobs:
         BOSH_DEPLOYMENT: cf-mysql
   - task: delete-deployment
     file: cf-mysql-ci/ci/tasks/delete-deployment/task.yml
+    input_mapping:
+      environment: full-bosh-environment
     params:
       ENV_REPO: deployments-configuration
       ENV_TARGET_FILE: full-bosh-environment/name
