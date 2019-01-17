@@ -3,7 +3,7 @@ set -eu
 
 WORKSPACE_DIR="$(pwd)"
 CI_DIR="${WORKSPACE_DIR}/cf-mysql-ci/"
-MY_DIR="${CI_DIR}/ci/task/verify-cluster-schemas/"
+MY_DIR="${CI_DIR}/ci/tasks/verify-cluster-schemas/"
 MYSQL_CONFIG=${MY_DIR}/mysql.config
 
 : "${ENV_TARGET_FILE:?}"
