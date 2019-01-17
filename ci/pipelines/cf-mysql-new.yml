@@ -1094,18 +1094,11 @@ jobs:
       file: cf-mysql-ci/ci/tasks/delete-stemcell/task.yml
   - *ondemand-deploy-manifest
   - task: run-verify-no-remote-access
-    config:
-      platform: linux
-      image_resource: *image_resource
-      inputs:
-        - name: cf-mysql-ci
-        - name: bosh-lite-info
-      params:
-        MYSQL_TUNNEL_USERNAME: jumpbox
-        ENV_TARGET_FILE: bosh-lite-info/external-ip
-        SSH_KEY_FILE: bosh-lite-info/jumpbox-private-key
-      run:
-        path: cf-mysql-ci/scripts/remote-access/verify-no-remote-access
+    file: cf-mysql-ci/ci/tasks/verify-no-remote-access/task.yml
+    params:
+      MYSQL_TUNNEL_USERNAME: jumpbox
+      ENV_TARGET_FILE: bosh-lite-info/external-ip
+      SSH_KEY_FILE: bosh-lite-info/jumpbox-private-key
   - *ondemand-teardown
 
 ### VERIFY TUNING WORKS
