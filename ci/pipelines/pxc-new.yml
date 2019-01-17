@@ -93,6 +93,12 @@ resources:
     uri: https://github.com/cloudfoundry/cf-deployment.git
     branch: release-candidate
 
+- name: cf-deployment-migration
+  type: git
+  source:
+    uri: https://github.com/cloudfoundry/cf-deployment.git
+    tag_filter: v6.10.0
+
 - name: cf-mysql-deployment
   type: git
   source:
@@ -435,7 +441,7 @@ jobs:
       passed: [create-and-compile-release]
       trigger: true
     - get: cf-deployment
-      resource: cf-deployment-release-candidate
+      resource: cf-deployment-migration
     - get: cf-deployment-concourse-tasks
     - get: cf-acceptance-tests
     - get: cf-mysql-deployment
