@@ -501,8 +501,8 @@ jobs:
       environment: full-bosh-environment
     params:
       ENV_REPO: deployments-configuration
-      ENV_TARGET_FILE: full-bosh-environment/name
-      ENV_METADATA: full-bosh-environment/metadata
+      ENV_TARGET_FILE: environment/name
+      ENV_METADATA: environment/metadata
       BOSH_DEPLOYMENT: cf-mysql
   - put: full-bosh-environment
     params:
