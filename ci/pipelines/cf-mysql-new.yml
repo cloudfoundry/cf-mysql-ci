@@ -1036,24 +1036,16 @@ jobs:
       ENABLE_REMOTE_ADMIN_ACCESS: true
   - *ondemand-deploy-manifest
   - task: run-verify-cluster-schemas-tests
-    config:
-      platform: linux
-      image_resource: *image_resource
-      inputs:
-        - name: cf-mysql-ci
-        - name: bosh-lite-info
-        - name: cf-mysql-release
-      params:
-        MYSQL_TUNNEL_USERNAME: jumpbox
-        ENV_TARGET_FILE: bosh-lite-info/director-url
-        DIRECTOR_IP: bosh-lite-info/external-ip
-        BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
-        BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
-        SSH_KEY_FILE: bosh-lite-info/jumpbox-private-key
-        BOSH_DEPLOYMENT: cf-mysql
-        BOSH_CA_CERT: bosh-lite-info/ca-cert
-      run:
-        path: cf-mysql-ci/scripts/verify-cluster-schemas/force-divergent-schemas-test
+    file: cf-mysql-ci/ci/tasks/verify-cluster-schemas/task.yml
+    params:
+      MYSQL_TUNNEL_USERNAME: jumpbox
+      ENV_TARGET_FILE: bosh-lite-info/director-url
+      DIRECTOR_IP: bosh-lite-info/external-ip
+      BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
+      BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
+      SSH_KEY_FILE: bosh-lite-info/jumpbox-private-key
+      BOSH_DEPLOYMENT: cf-mysql
+      BOSH_CA_CERT: bosh-lite-info/ca-cert
   - *ondemand-teardown
 
 ### VERIFY NO REMOTE ACCESS
