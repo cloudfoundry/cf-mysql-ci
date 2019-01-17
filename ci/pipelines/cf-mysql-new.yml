@@ -1014,20 +1014,13 @@ jobs:
       ENABLE_REMOTE_ADMIN_ACCESS: true
   - *ondemand-deploy-manifest
   - task: restart-broken-node
+    file: cf-mysql-ci/ci/tasks/restart-broken-node-after-data-loss/task.yml
     attempts: 5
-    config:
-      platform: linux
-      image_resource: *image_resource
-      inputs:
-        - name: cf-mysql-ci
-        - name: bosh-lite-info
-      params:
-        ENV_TARGET_FILE: bosh-lite-info/director-url
-        BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
-        BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
-        BOSH_DEPLOYMENT: cf-mysql
-      run:
-        path: cf-mysql-ci/scripts/data-loss/restart-broken-node
+    params:
+      ENV_TARGET_FILE: bosh-lite-info/director-url
+      BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
+      BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
+      BOSH_DEPLOYMENT: cf-mysql
   - *ondemand-teardown
 
 ### VERIFY CLUSTER SCHEMAS
