@@ -75,12 +75,12 @@ resources:
   source:
     repository: cloudfoundry-incubator/pxc-release
 
-#- name: pxc-release-release-candidate
-#  type: git
-#  source:
-#    uri: git@github.com:cloudfoundry-incubator/pxc-release.git
-#    branch: release-candidate
-#    private_key: ((core-services-ci-credentials/Notes/git-writer-private-key))
+- name: pxc-release-release-candidate
+  type: git
+  source:
+    uri: git@github.com:cloudfoundry-incubator/pxc-release.git
+    branch: release-candidate
+    private_key: ((core-services-ci-credentials/Notes/git-writer-private-key))
 
 - name: bpm-release
   type: bosh-io-release
@@ -146,12 +146,12 @@ resources:
     key: version
     initial_version: 0.1.0
 
-#- name: weekly-trigger
-#  type: time
-#  source:
-#    days:
-#    - Monday
-#    interval: 24h
+- name: weekly-trigger
+  type: time
+  source:
+    days:
+    - Monday
+    interval: 24h
 
 - name: pxc-compiled-release-for-cf-deployment-rc
   type: s3
@@ -177,20 +177,20 @@ resources:
     secret_access_key: ((core-services-ci-credentials/Notes/cf-mysql-ci-aws-secret-access-key))
     versioned_file: compiled-releases/pxc-ubuntu-xenial.tgz
 
-#- name: publish-github-release
-#  type: github-release
-#  source:
-#    user: cloudfoundry-incubator
-#    repository: pxc-release
-#    access_token: ((core-services-ci-credentials/Notes/git-writer-github-access-token))
+- name: publish-github-release
+  type: github-release
+  source:
+    user: cloudfoundry-incubator
+    repository: pxc-release
+    access_token: ((core-services-ci-credentials/Notes/git-writer-github-access-token))
 
-#- name: release-notes
-#  type: s3
-#  source:
-#    bucket: pxc-release-notes
-#    regexp: RELEASE_NOTES_v(.*)
-#    access_key_id: ((core-services-ci-credentials/Notes/cf-mysql-ci-aws-access-key-id))
-#    secret_access_key: ((core-services-ci-credentials/Notes/cf-mysql-ci-aws-secret-access-key))
+- name: release-notes
+  type: s3
+  source:
+    bucket: pxc-release-notes
+    regexp: RELEASE_NOTES_v(.*)
+    access_key_id: ((core-services-ci-credentials/Notes/cf-mysql-ci-aws-access-key-id))
+    secret_access_key: ((core-services-ci-credentials/Notes/cf-mysql-ci-aws-secret-access-key))
 
 jobs:
 - name: bump-version
@@ -209,8 +209,8 @@ jobs:
       trigger: true
     - get: cf-deployment-release-candidate
       trigger: true
-#    - get: weekly-trigger
-#      trigger: true
+    - get: weekly-trigger
+      trigger: true
     - get: version
     - get: cf-mysql-ci
   - task: gate-on-stemcells
@@ -220,9 +220,9 @@ jobs:
     input_mapping:
       gcp-bosh-stemcell: xenial-gcp-bosh-stemcell
       bosh-lite-stemcell: xenial-bosh-lite-stemcell
-#  - put: version
-#    params:
-#      pre: rc
+  - put: version
+    params:
+      pre: rc
 
 - name: test-unit-and-integration
   serial: true
@@ -1123,36 +1123,36 @@ jobs:
   - do: *teardown-bosh-lite
 
 - name: promote-release-candidate
- plan:
- - do:
-   - get: pxc-release
-     passed:
-     - test-clean-install-pxc
-     - test-migrate-to-pxc
-     - test-upgrade-pxc
-     - test-failover
-     - test-scaling
-     - test-bootstrap
-     - test-no-remote-admin-access
-     - test-autotune
-     - test-single-node
-     - test-xenial
-   - get: version
-     trigger: true
-     passed:
-     - test-clean-install-pxc
-     - test-migrate-to-pxc
-     - test-upgrade-pxc
-     - test-failover
-     - test-scaling
-     - test-bootstrap
-     - test-no-remote-admin-access
-     - test-autotune
-     - test-single-node
-     - test-xenial
-   - put: pxc-release-release-candidate
-     params:
-       repository: pxc-release
+  plan:
+  - do:
+    - get: pxc-release
+      passed:
+      - test-clean-install-pxc
+      - test-migrate-to-pxc
+      - test-upgrade-pxc
+      - test-failover
+      - test-scaling
+      - test-bootstrap
+      - test-no-remote-admin-access
+      - test-autotune
+      - test-single-node
+      - test-xenial
+    - get: version
+      trigger: true
+      passed:
+      - test-clean-install-pxc
+      - test-migrate-to-pxc
+      - test-upgrade-pxc
+      - test-failover
+      - test-scaling
+      - test-bootstrap
+      - test-no-remote-admin-access
+      - test-autotune
+      - test-single-node
+      - test-xenial
+    - put: pxc-release-release-candidate
+      params:
+        repository: pxc-release
 
 - name: final-release
   serial_groups: [version-bumper]
@@ -1185,22 +1185,22 @@ jobs:
         GIT_COMMIT_MESSAGE: commit-message/commit-message
         REPO_DIR: pxc-release-final
         OUTPUT_DIR: pxc-release-committed
-		- task: prep-github-release
-			file: cf-mysql-ci/ci/tasks/prep-github-release/task.yml
-			input_mapping: {github-release-committed: pxc-release-committed}
-			params:
-				RELEASE_DIR: pxc-release
-   - put: pxc-release
-     params:
-       repository: pxc-release-committed/pxc-release-final
-       tag: output-release-dir/release-tag
-   - put: version
-     params:
-       bump: minor
-       pre: rc
-   - put: publish-github-release
-     params:
-       name: output-release-dir/release-tag
-       tag: output-release-dir/release-tag
-       body: output-release-dir/generated-release-notes
-       commitish: output-release-dir/git-commit
+    - task: prep-github-release
+      file: cf-mysql-ci/ci/tasks/prep-github-release/task.yml
+      input_mapping: {github-release-committed: pxc-release-committed}
+      params:
+        RELEASE_DIR: pxc-release
+    - put: pxc-release
+      params:
+        repository: pxc-release-committed/pxc-release-final
+        tag: output-release-dir/release-tag
+    - put: version
+      params:
+        bump: minor
+        pre: rc
+    - put: publish-github-release
+      params:
+        name: output-release-dir/release-tag
+        tag: output-release-dir/release-tag
+        body: output-release-dir/generated-release-notes
+        commitish: output-release-dir/git-commit
