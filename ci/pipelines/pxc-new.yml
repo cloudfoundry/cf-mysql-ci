@@ -1122,103 +1122,85 @@ jobs:
       INSTANCE: mysql/0
   - do: *teardown-bosh-lite
 
-#- name: promote-release-candidate
-#  plan:
-#  - do:
-#    - get: pxc-release
-#      passed:
-#      - test-clean-install-pxc
-#      - test-migrate-to-pxc
-#      - test-upgrade-pxc
-#      - test-failover
-#      - test-scaling
-#      - test-bootstrap
-#      - test-no-remote-admin-access
-#      - test-autotune
-#      - test-single-node
-#      - test-xenial
-#    - get: version
-#      trigger: true
-#      passed:
-#      - test-clean-install-pxc
-#      - test-migrate-to-pxc
-#      - test-upgrade-pxc
-#      - test-failover
-#      - test-scaling
-#      - test-bootstrap
-#      - test-no-remote-admin-access
-#      - test-autotune
-#      - test-single-node
-#      - test-xenial
-#    - put: pxc-release-release-candidate
-#      params:
-#        repository: pxc-release
-#
-#- name: final-release
-#  serial_groups: [version-bumper]
-#  plan:
-#    - aggregate:
-#      - get: pxc-release
-#        passed: [promote-release-candidate]
-#      - get: cf-mysql-ci
-#      - get: release-notes
-#      - get: version
-#        passed: [promote-release-candidate]
-#        params:
-#          bump: final
-#    - task: create-release
-#      file: cf-mysql-ci/ci/tasks/create-release/task.yml
-#      input_mapping: {release-repo: pxc-release}
-#      output_mapping: {release-repo-modified: pxc-release-final}
-#      params:
-#        RELEASE_NAME: pxc
-#        BLOBS_BUCKET_NAME: ((pxc-release-private.yml/Notes/bucket_name))
-#        FINAL: true
-#        BOSH_SHA2: true
-#        AWS_ACCESS_KEY_ID: ((pxc-release-private.yml/Notes/access_key_id))
-#        AWS_SECRET_ACCESS_KEY: ((pxc-release-private.yml/Notes/secret_access_key))
-#    - task: commit-final-release-changes
-#      config:
-#        platform: linux
-#        image_resource: *image_resource
-#        inputs:
-#        - name: cf-mysql-ci
-#        - name: pxc-release-final
-#        - name: commit-message
-#        outputs:
-#        - name: pxc-release-committed
-#        params:
-#          GIT_COMMIT_MESSAGE: commit-message/commit-message
-#          REPO_DIR: pxc-release-final
-#          OUTPUT_DIR: pxc-release-committed
-#        run:
-#          path: cf-mysql-ci/scripts/publish/git-commit-changes
-#    - task: prep-github-release
-#      config:
-#        platform: linux
-#        image_resource: *image_resource
-#        params:
-#          RELEASE_DIR: pxc-release
-#        inputs:
-#        - name: release-notes
-#        - name: cf-mysql-ci
-#        - name: pxc-release-committed
-#        - name: version
-#        outputs:
-#        - name: output-release-dir
-#        run:
-#          path: cf-mysql-ci/scripts/publish/prep-github-release
-#    - put: pxc-release
-#      params:
-#        repository: pxc-release-committed/pxc-release-final
-#        tag: output-release-dir/release-tag
-#    - put: version
-#      params:
-#        bump: minor
-#        pre: rc
-#    - put: publish-github-release
-#      params:
-#        name: output-release-dir/release-tag
-#        tag: output-release-dir/release-tag
-#        body: output-release-dir/generated-release-notes
-#        commitish: output-release-dir/git-commit
+- name: promote-release-candidate
+ plan:
+ - do:
+   - get: pxc-release
+     passed:
+     - test-clean-install-pxc
+     - test-migrate-to-pxc
+     - test-upgrade-pxc
+     - test-failover
+     - test-scaling
+     - test-bootstrap
+     - test-no-remote-admin-access
+     - test-autotune
+     - test-single-node
+     - test-xenial
+   - get: version
+     trigger: true
+     passed:
+     - test-clean-install-pxc
+     - test-migrate-to-pxc
+     - test-upgrade-pxc
+     - test-failover
+     - test-scaling
+     - test-bootstrap
+     - test-no-remote-admin-access
+     - test-autotune
+     - test-single-node
+     - test-xenial
+   - put: pxc-release-release-candidate
+     params:
+       repository: pxc-release
+
+- name: final-release
+  serial_groups: [version-bumper]
+  plan:
+    - aggregate:
+      - get: pxc-release
+        passed: [promote-release-candidate]
+      - get: cf-mysql-ci
+      - get: release-notes
+      - get: version
+        passed: [promote-release-candidate]
+        params:
+          bump: final
+    - task: create-release
+      file: cf-mysql-ci/ci/tasks/create-release/task.yml
+      input_mapping: {release-repo: pxc-release}
+      output_mapping: {release-repo-modified: pxc-release-final}
+      params:
+        RELEASE_NAME: pxc
+        BLOBS_BUCKET_NAME: ((pxc-release-private.yml/Notes/bucket_name))
+        FINAL: true
+        BOSH_SHA2: true
+        AWS_ACCESS_KEY_ID: ((pxc-release-private.yml/Notes/access_key_id))
+        AWS_SECRET_ACCESS_KEY: ((pxc-release-private.yml/Notes/secret_access_key))
+    - task: commit-final-release-changes
+      file: cf-mysql-ci/ci/tasks/commit-github-release-changes/task.yml
+      input_mapping: {github-release: pxc-release-final}
+      output_mapping: {github-release-committed: pxc-release-committed}
+      params:
+        GIT_COMMIT_MESSAGE: commit-message/commit-message
+        REPO_DIR: pxc-release-final
+        OUTPUT_DIR: pxc-release-committed
+		- task: prep-github-release
+			file: cf-mysql-ci/ci/tasks/prep-github-release/task.yml
+			input_mapping: {github-release-committed: pxc-release-committed}
+			params:
+				RELEASE_DIR: pxc-release
+   - put: pxc-release
+     params:
+       repository: pxc-release-committed/pxc-release-final
+       tag: output-release-dir/release-tag
+   - put: version
+     params:
+       bump: minor
+       pre: rc
+   - put: publish-github-release
+     params:
+       name: output-release-dir/release-tag
+       tag: output-release-dir/release-tag
+       body: output-release-dir/generated-release-notes
+       commitish: output-release-dir/git-commit

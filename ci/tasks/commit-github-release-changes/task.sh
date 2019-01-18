@@ -1,10 +1,8 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -eux
 
-MY_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-CI_DIR="$(cd "${MY_DIR}/../.." && pwd )"
-WORKSPACE_DIR="$(cd "${CI_DIR}/.." && pwd )"
+WORKSPACE_DIR="$(pwd)"
 REPO_DIR="$(cd "${WORKSPACE_DIR}/${REPO_DIR:?}" && pwd )"
 
 OUTPUT_DIR="${OUTPUT_DIR:?}"
@@ -28,5 +26,4 @@ pushd ${REPO_DIR}
 
 popd
 
-cd ${WORKSPACE_DIR}
 cp -rf ${REPO_DIR} ${OUTPUT_DIR}

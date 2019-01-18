@@ -1,0 +1,18 @@
+---
+platform: linux
+
+image_resource:
+  source:
+    repository: cloudfoundry/cf-mysql-ci
+  type: docker-image
+
+inputs:
+- name: release-notes
+- name: cf-mysql-ci
+- name: github-release-committed
+outputs:
+- name: output-release-dir
+params:
+  RELEASE_DIR:
+run:
+  path: cf-mysql-ci/ci/tasks/prep-github-release/task.sh
