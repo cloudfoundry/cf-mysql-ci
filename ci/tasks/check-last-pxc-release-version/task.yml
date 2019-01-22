@@ -1,0 +1,16 @@
+---
+platform: linux
+
+image_resource:
+  source:
+    repository: cloudfoundry/cf-mysql-ci
+  type: docker-image
+
+inputs:
+- name: cf-mysql-ci
+- name: last-pxc-release-source
+- name: last-pxc-release-bosh-release
+
+run:
+  path: cf-mysql-ci/ci/tasks/check-last-pxc-release-version/task.sh
+

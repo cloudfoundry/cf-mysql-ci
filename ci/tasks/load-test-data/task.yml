@@ -1,0 +1,15 @@
+---
+platform: linux
+
+image_resource:
+  source:
+    repository: cloudfoundry/cf-mysql-ci
+  type: docker-image
+
+inputs:
+  - name: cf-mysql-ci
+  - name: bosh-lite-info
+
+run:
+  path: cf-mysql-ci/ci/tasks/load-test-data/task.sh
+

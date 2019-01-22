@@ -1,17 +1,5 @@
 #!/bin/bash
+DIR=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
+CI_DIR=$(git -C "${DIR}" rev-parse --show-toplevel)
 
-set -eux
-
-CWD=$(pwd)
-
-gcp=$(egrep -o "^[0-9]+" "${CWD}/gcp-bosh-stemcell/version")
-boshlite=$(egrep -o "^[0-9]+" "${CWD}/bosh-lite-stemcell/version")
-
-if [[ "${gcp}" != "${boshlite}" ]]; then
-	set +x
-	echo "Not all stemcells are on the same version"
-	echo "gcp=${gcp}"
-	echo "boshlite=${boshlite}"
-	exit 1
-fi
-
+${CI_DIR}/ci/tasks/gate-on-stemcells/task.sh

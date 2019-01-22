@@ -1,0 +1,29 @@
+---
+platform: linux
+
+image_resource:
+  source:
+    repository: cloudfoundry/cf-mysql-ci
+  type: docker-image
+
+inputs:
+- name: cf-mysql-ci
+- name: release-tarball
+- name: gcp-bosh-stemcell
+
+outputs:
+- name: compiled-release-tarball
+
+params:
+  BOSH_ALL_PROXY:
+  BOSH_CLIENT:
+  BOSH_CLIENT_SECRET:
+  BOSH_ENVIRONMENT:
+  BOSH_JUMPBOX_PRIVATE_KEY:
+  RELEASE_NAME:
+  STEMCELL_LINE:
+  OUTPUT_DIR: compiled-release-tarball
+
+run:
+  path: cf-mysql-ci/ci/tasks/compile-release/task.sh
+

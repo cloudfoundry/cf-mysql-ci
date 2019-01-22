@@ -13,9 +13,10 @@ inputs:
 outputs:
 - name: deployments-terraformed
 
-run:
-  path: cf-mysql-ci/ci/tasks/apply-bosh-lite-terraform/task.sh
-
 params:
   OUTPUT_DIR: deployments-terraformed
   DEPLOYMENTS_DIR: deployments
+
+run:
+  path: cf-mysql-ci/ci/tasks/apply-bosh-lite-terraform/task.sh
+

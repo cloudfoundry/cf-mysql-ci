@@ -1,0 +1,25 @@
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: cloudfoundry/cf-mysql-ci
+
+inputs:
+  - name: cf-mysql-ci
+  - name: bosh-lite-info
+  - name: cf-mysql-release
+
+params:
+  MYSQL_TUNNEL_USERNAME:
+  ENV_TARGET_FILE:
+  DIRECTOR_IP:
+  BOSH_CLIENT:
+  BOSH_CLIENT_SECRET:
+  SSH_KEY_FILE:
+  BOSH_DEPLOYMENT:
+  BOSH_CA_CERT:
+
+run:
+  path: cf-mysql-ci/ci/tasks/verify-cluster-schemas/task.sh
+

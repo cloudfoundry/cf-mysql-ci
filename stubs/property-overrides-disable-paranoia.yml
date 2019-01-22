@@ -1,3 +1,0 @@
-property_overrides:
-  mysql:
-    disable_auto_sst: false

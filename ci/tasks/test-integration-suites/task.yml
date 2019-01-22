@@ -1,0 +1,23 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: cloudfoundry/cf-mysql-ci
+
+inputs:
+  - name: bosh-lite-info
+  - name: cf-mysql-ci
+  - name: pxc-release
+
+params:
+  AUDIT_LOG_PATH:
+  BOSH_CLIENT:
+  BOSH_CLIENT_SECRET:
+  BOSH_DEPLOYMENT: pxc
+  TEST_SUITE_NAME:
+
+run:
+  path: cf-mysql-ci/ci/tasks/test-integration-suites/task.sh
+

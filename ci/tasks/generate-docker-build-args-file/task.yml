@@ -1,0 +1,21 @@
+---
+platform: linux
+
+image_resource:
+  source:
+    repository: cloudfoundry/cf-mysql-ci
+  type: docker-image
+
+inputs:
+- name: bbl-github-release
+- name: bosh-cli-github-release
+- name: credhub-cli-github-release
+- name: terraform-github-release
+- name: cf-mysql-ci
+
+outputs:
+- name: docker-build-args
+
+run:
+  path: cf-mysql-ci/ci/tasks/generate-docker-build-args-file/task.sh
+
