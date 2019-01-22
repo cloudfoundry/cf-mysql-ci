@@ -20,13 +20,13 @@ resource_types:
     repository: cloudfoundry/bosh-deployment-resource
 
 resources:
-#- name: cf-mysql-ci-image
-#  type: docker-image
-#  source:
-#    username: ((core-services-ci-credentials/Notes/pivotal-docker-username))
-#    email: ((core-services-ci-credentials/Notes/pivotal-docker-email))
-#    password: ((core-services-ci-credentials/Notes/pivotal-docker-password))
-#    repository: cloudfoundry/cf-mysql-ci
+- name: cf-mysql-ci-image
+  type: docker-image
+  source:
+    username: ((core-services-ci-credentials/Notes/pivotal-docker-username))
+    email: ((core-services-ci-credentials/Notes/pivotal-docker-email))
+    password: ((core-services-ci-credentials/Notes/pivotal-docker-password))
+    repository: cloudfoundry/cf-mysql-ci
 
 - name: ubuntu-trusty-docker-image
   type: docker-image
@@ -143,23 +143,23 @@ resources:
     branch: master
     private_key: ((core-services-ci-credentials/Notes/git-writer-private-key))
 
-#- name: cf-mysql-deployment-release-candidate
-#  type: git
-#  source:
-#    uri: git@github.com:cloudfoundry/cf-mysql-deployment.git
-#    branch: release-candidate
-#    private_key: ((core-services-ci-credentials/Notes/git-writer-private-key))
+- name: cf-mysql-deployment-release-candidate
+  type: git
+  source:
+    uri: git@github.com:cloudfoundry/cf-mysql-deployment.git
+    branch: release-candidate
+    private_key: ((core-services-ci-credentials/Notes/git-writer-private-key))
 
-#- name: runtime-ci
-#  type: git
-#  source:
-#    uri: https://github.com/cloudfoundry/runtime-ci
-#    branch: master
+- name: runtime-ci
+  type: git
+  source:
+    uri: https://github.com/cloudfoundry/runtime-ci
+    branch: master
 
-#- name: bosh-io-release-cf-mysql-release
-#  type: bosh-io-release
-#  source:
-#    repository: cloudfoundry/cf-mysql-release
+- name: bosh-io-release-cf-mysql-release
+  type: bosh-io-release
+  source:
+    repository: cloudfoundry/cf-mysql-release
 
 - name: cf-mysql-release
   type: git
@@ -177,19 +177,19 @@ resources:
     paths:
     - src/github.com/cloudfoundry-incubator/cf-mysql-acceptance-tests/assets/cipher_finder/**/*
 
-#- name: cf-mysql-master
-#  type: git
-#  source:
-#    uri: git@github.com:cloudfoundry/cf-mysql-release.git
-#    branch: master
-#    private_key: ((core-services-ci-credentials/Notes/git-writer-private-key))
+- name: cf-mysql-master
+  type: git
+  source:
+    uri: git@github.com:cloudfoundry/cf-mysql-release.git
+    branch: master
+    private_key: ((core-services-ci-credentials/Notes/git-writer-private-key))
 
-#- name: cf-mysql-release-candidate
-#  type: git
-#  source:
-#    uri: git@github.com:cloudfoundry/cf-mysql-release.git
-#    branch: release-candidate
-#    private_key: ((core-services-ci-credentials/Notes/git-writer-private-key))
+- name: cf-mysql-release-candidate
+  type: git
+  source:
+    uri: git@github.com:cloudfoundry/cf-mysql-release.git
+    branch: release-candidate
+    private_key: ((core-services-ci-credentials/Notes/git-writer-private-key))
 
 - name: full-bosh-environment
   type: pool
@@ -208,13 +208,13 @@ resources:
     private_key: ((core-services-ci-credentials/Notes/pcf-mysql-engine-writer-private-key))
 
 
-#- name: cf-mysql-rc-artifacts
-#  type: s3
-#  source:
-#    bucket: cf-mysql-releases
-#    regexp: release-candidate/cf-mysql-(.*-rc.*)\.tgz
-#    access_key_id: ((core-services-ci-credentials/Notes/cf-mysql-ci-aws-access-key-id))
-#    secret_access_key: ((core-services-ci-credentials/Notes/cf-mysql-ci-aws-secret-access-key))
+- name: cf-mysql-rc-artifacts
+  type: s3
+  source:
+    bucket: cf-mysql-releases
+    regexp: release-candidate/cf-mysql-(.*-rc.*)\.tgz
+    access_key_id: ((core-services-ci-credentials/Notes/cf-mysql-ci-aws-access-key-id))
+    secret_access_key: ((core-services-ci-credentials/Notes/cf-mysql-ci-aws-secret-access-key))
 
 - name: cf-mysql-compiled-release
   type: s3
@@ -248,12 +248,12 @@ resources:
     secret_access_key: ((core-services-ci-credentials/Notes/cf-mysql-ci-aws-secret-access-key))
     key: version
 
-#- name: weekly-trigger
-#  type: time
-#  source:
-#    days:
-#    - Monday
-#    interval: 24h
+- name: weekly-trigger
+  type: time
+  source:
+    days:
+    - Monday
+    interval: 24h
 
 - name: s3-resource-final-release
   type: s3
@@ -263,20 +263,20 @@ resources:
     access_key_id: ((core-services-ci-credentials/Notes/cf-mysql-ci-aws-access-key-id))
     secret_access_key: ((core-services-ci-credentials/Notes/cf-mysql-ci-aws-secret-access-key))
 
-#- name: publish-github-release
-#  type: github-release
-#  source:
-#    user: cloudfoundry
-#    repository: cf-mysql-release
-#    access_token: ((core-services-ci-credentials/Notes/git-writer-github-access-token))
+- name: publish-github-release
+  type: github-release
+  source:
+    user: cloudfoundry
+    repository: cf-mysql-release
+    access_token: ((core-services-ci-credentials/Notes/git-writer-github-access-token))
 
-#- name: release-notes
-#  type: s3
-#  source:
-#    bucket: cf-mysql-release-notes
-#    regexp: RELEASE_NOTES_v(.*)
-#    access_key_id: ((core-services-ci-credentials/Notes/cf-mysql-ci-aws-access-key-id))
-#    secret_access_key: ((core-services-ci-credentials/Notes/cf-mysql-ci-aws-secret-access-key))
+- name: release-notes
+  type: s3
+  source:
+    bucket: cf-mysql-release-notes
+    regexp: RELEASE_NOTES_v(.*)
+    access_key_id: ((core-services-ci-credentials/Notes/cf-mysql-ci-aws-access-key-id))
+    secret_access_key: ((core-services-ci-credentials/Notes/cf-mysql-ci-aws-secret-access-key))
 
 ### JOBS
 jobs:
@@ -298,10 +298,10 @@ jobs:
     - get: cf-mysql-ci
   - task: generate-docker-build-args-file
     file: cf-mysql-ci/ci/tasks/generate-docker-build-args-file/task.yml
-#  - put: cf-mysql-ci-image
-#    params:
-#      build: cf-mysql-dockerfile/scripts/
-#      build_args_file: docker-build-args/docker-build-args.json
+  - put: cf-mysql-ci-image
+    params:
+      build: cf-mysql-dockerfile/scripts/
+      build_args_file: docker-build-args/docker-build-args.json
 
 - name: update-acceptance-tests
   plan:
@@ -316,9 +316,9 @@ jobs:
       BLOBS_BUCKET_NAME: mysql-service-blobs
       AWS_ACCESS_KEY_ID: ((core-services-ci-credentials/Notes/cf-mysql-publish-blobs-aws-access-key-id))
       AWS_SECRET_ACCESS_KEY: ((core-services-ci-credentials/Notes/cf-mysql-publish-blobs-aws-secret-access-key))
-#  - put: cf-mysql-release
-#    params:
-#      repository: cf-mysql-release-changed
+  - put: cf-mysql-release
+    params:
+      repository: cf-mysql-release-changed
 
 - name: test-unit
   serial_groups: [version_bumper]
@@ -326,8 +326,8 @@ jobs:
   plan:
   - aggregate:
     - get: cf-mysql-ci
-#    - get: weekly-trigger
-#      trigger: true
+    - get: weekly-trigger
+      trigger: true
     - get: cf-mysql-release
       trigger: true
     - get: cf-mysql-deployment
@@ -349,9 +349,9 @@ jobs:
       file: cf-mysql-ci/ci/tasks/test-broker/task.yml
     - task: test-broker-dependencies
       file: cf-mysql-ci/ci/tasks/test-broker-dependencies/task.yml
-#  - put: version
-#    params:
-#      pre: rc
+  - put: version
+    params:
+      pre: rc
 
 - name: create-and-compile-release
   plan:
@@ -1240,242 +1240,224 @@ jobs:
       BOSH_DEPLOYMENT: cf-mysql
   - *ondemand-teardown
 
-#- name: upload-rc-artifacts
-#  plan:
-#  - aggregate:
-#    - get: cf-mysql-release
-#      passed:
-#      - test-full-bosh
-#      - test-scaling
-#      - test-failover
-#      - test-verify-cluster-schemas
-#      - test-interruptor-prevents-data-loss
-#      - test-interruptor-can-be-disabled
-#      - test-bootstrap
-#      - test-upgrade-from-previous
-#      - test-arb-to-full-scaling
-#      - test-verify-no-remote-access
-#      - test-verify-tuning
-#      - test-tls
-#      - test-xenial
-#      trigger: true
-#    - get: cf-mysql-ci
-#    - get: version
-#      passed:
-#      - test-full-bosh
-#      - test-scaling
-#      - test-failover
-#      - test-verify-cluster-schemas
-#      - test-interruptor-prevents-data-loss
-#      - test-interruptor-can-be-disabled
-#      - test-bootstrap
-#      - test-upgrade-from-previous
-#      - test-arb-to-full-scaling
-#      - test-verify-no-remote-access
-#      - test-verify-tuning
-#      - test-tls
-#      - test-xenial
-#  - *create-release
-#  - put: cf-mysql-rc-artifacts
-#    params:
-#      file: release-tarball/cf-mysql*.tgz
-#
-#- name: promote-to-rc
-#  plan:
-#  - aggregate:
-#    - get: cf-mysql-release
-#      passed:
-#      - test-full-bosh
-#      - test-scaling
-#      - test-failover
-#      - test-verify-cluster-schemas
-#      - test-interruptor-prevents-data-loss
-#      - test-interruptor-can-be-disabled
-#      - test-bootstrap
-#      - test-upgrade-from-previous
-#      - test-arb-to-full-scaling
-#      - test-verify-no-remote-access
-#      - test-verify-tuning
-#      - test-tls
-#      - test-xenial
-#      trigger: true
-#      params:
-#        fetch: [release-candidate]
-#    - get: cf-mysql-deployment
-#      passed:
-#      - test-full-bosh
-#      - test-scaling
-#      - test-failover
-#      - test-verify-cluster-schemas
-#      - test-interruptor-prevents-data-loss
-#      - test-interruptor-can-be-disabled
-#      - test-bootstrap
-#      - test-upgrade-from-previous
-#      - test-arb-to-full-scaling
-#      - test-verify-no-remote-access
-#      - test-verify-tuning
-#      - test-tls
-#      - test-xenial
-#    - get: cf-mysql-ci
-#    - get: version
-#      passed:
-#      - test-full-bosh
-#      - test-scaling
-#      - test-failover
-#      - test-verify-cluster-schemas
-#      - test-interruptor-prevents-data-loss
-#      - test-interruptor-can-be-disabled
-#      - test-bootstrap
-#      - test-upgrade-from-previous
-#      - test-arb-to-full-scaling
-#      - test-verify-no-remote-access
-#      - test-verify-tuning
-#      - test-tls
-#      - test-xenial
-#    - get: gcp-bosh-stemcell
-#      passed: [test-full-bosh]
-#  - aggregate:
-#    - put: cf-mysql-release-candidate
-#      params:
-#        repository: cf-mysql-release
-#    - put: cf-mysql-deployment-release-candidate
-#      params:
-#        repository: cf-mysql-deployment
-#
-#- name: final-release
-#  serial_groups: [version-bumper]
-#  plan:
-#    - aggregate:
-#      - get: cf-mysql-release
-#        passed: [promote-to-rc]
-#      - get: cf-mysql-deployment-release-candidate
-#        passed: [promote-to-rc]
-#      - get: cf-mysql-ci
-#      - get: release-notes
-#      - get: version
-#        passed: [promote-to-rc]
-#        params:
-#          bump: final
-#      - get: gcp-bosh-stemcell
-#        passed: [promote-to-rc]
-#    - task: create-mysql-release
-#      file: cf-mysql-ci/ci/tasks/create-release/task.yml
-#      input_mapping: {release-repo: cf-mysql-release}
-#      output_mapping: {release-repo-modified: cf-mysql-release-final}
-#      params:
-#        RELEASE_NAME: cf-mysql
-#        BLOBS_BUCKET_NAME: mysql-service-blobs
-#        FINAL: true
-#        AWS_ACCESS_KEY_ID: ((core-services-ci-credentials/Notes/cf-mysql-publish-blobs-aws-access-key-id))
-#        AWS_SECRET_ACCESS_KEY: ((core-services-ci-credentials/Notes/cf-mysql-publish-blobs-aws-secret-access-key))
-#    - task: commit-final-release-changes
-#      config:
-#        platform: linux
-#        image_resource: *image_resource
-#        inputs:
-#        - name: cf-mysql-ci
-#        - name: cf-mysql-release-final
-#        - name: commit-message
-#        outputs:
-#        - name: cf-mysql-release-committed
-#        params:
-#          GIT_COMMIT_MESSAGE: commit-message/commit-message
-#          REPO_DIR: cf-mysql-release-final
-#          OUTPUT_DIR: cf-mysql-release-committed
-#        run:
-#          path: cf-mysql-ci/scripts/publish/git-commit-changes
-#    - task: prep-github-release
-#      config:
-#        platform: linux
-#        image_resource: *image_resource
-#        params:
-#          RELEASE_DIR: cf-mysql-release
-#        inputs:
-#        - name: release-notes
-#        - name: cf-mysql-ci
-#        - name: cf-mysql-release-committed
-#        - name: version
-#        outputs:
-#        - name: output-release-dir
-#        run:
-#          path: cf-mysql-ci/scripts/publish/prep-github-release
-#    - put: cf-mysql-master
-#      params:
-#        repository: cf-mysql-release-committed/cf-mysql-release-final
-#        tag: output-release-dir/release-tag
-#    - put: version
-#      params:
-#        bump: minor
-#        pre: rc
-#    - put: s3-resource-final-release
-#      params:
-#        file: release-tarball/cf-mysql-*.tgz
-#    - put: publish-github-release
-#      params:
-#        name: output-release-dir/release-tag
-#        tag: output-release-dir/release-tag
-#        body: output-release-dir/generated-release-notes
-#        commitish: output-release-dir/git-commit
-#
-#- name: finalize-cf-mysql-deployment
-#  plan:
-#    - aggregate:
-#      - get: cf-mysql-deployment-release-candidate
-#        passed: [final-release]
-#      - get: cf-mysql-deployment-master
-#      - get: bosh-io-release-cf-mysql-release
-#        trigger: true
-#      - get: runtime-ci
-#      - get: gcp-bosh-stemcell
-#        passed: [final-release]
-#      - get: cf-mysql-ci
-#    - put: cf-mysql-deployment-master
-#      params:
-#        repository: cf-mysql-deployment-release-candidate
-#        merge: true
-#    - task: update-cf-mysql-deployment-with-new-release
-#      file: cf-mysql-ci/ci/tasks/update-cf-mysql-deployment-with-new-release/task.yml
-#    - task: configure-tag-name
-#      file: cf-mysql-ci/ci/tasks/configure-tag-name/task.yml
-#    - put: cf-mysql-deployment-master
-#      params:
-#        repository: updated-cf-mysql-deployment-master
-#        tag: tag-name/name
-#
-#- name: merge-cf-mysql-deployment-master-into-develop
-#  plan:
-#  - get: cf-mysql-deployment-master
-#    trigger: true
-#  - put: cf-mysql-deployment
-#    params:
-#      repository: cf-mysql-deployment-master
-#      merge: true
-#
-#- name: merge-master-into-develop
-#  plan:
-#  - get: cf-mysql-master
-#    trigger: true
-#  - put: cf-mysql-release
-#    params:
-#      repository: cf-mysql-master
-#      merge: true
-#
-#- name: bump-minor
-#  plan:
-#  - aggregate:
-#    - get: version
-#      params:
-#        bump: minor
-#  - put: version
-#    params:
-#      file: version/version
-#
-#- name: bump-major
-#  plan:
-#  - aggregate:
-#    - get: version
-#      params:
-#        bump: major
-#  - put: version
-#    params:
-#      file: version/version
+- name: upload-rc-artifacts
+  plan:
+  - aggregate:
+    - get: cf-mysql-release
+      passed:
+      - test-full-bosh
+      - test-scaling
+      - test-failover
+      - test-verify-cluster-schemas
+      - test-interruptor-prevents-data-loss
+      - test-interruptor-can-be-disabled
+      - test-bootstrap
+      - test-upgrade-from-previous
+      - test-arb-to-full-scaling
+      - test-verify-no-remote-access
+      - test-verify-tuning
+      - test-tls
+      - test-xenial
+      trigger: true
+    - get: cf-mysql-ci
+    - get: version
+      passed:
+      - test-full-bosh
+      - test-scaling
+      - test-failover
+      - test-verify-cluster-schemas
+      - test-interruptor-prevents-data-loss
+      - test-interruptor-can-be-disabled
+      - test-bootstrap
+      - test-upgrade-from-previous
+      - test-arb-to-full-scaling
+      - test-verify-no-remote-access
+      - test-verify-tuning
+      - test-tls
+      - test-xenial
+  - *create-release
+  - put: cf-mysql-rc-artifacts
+    params:
+      file: release-tarball/cf-mysql*.tgz
+
+- name: promote-to-rc
+  plan:
+  - aggregate:
+    - get: cf-mysql-release
+      passed:
+      - test-full-bosh
+      - test-scaling
+      - test-failover
+      - test-verify-cluster-schemas
+      - test-interruptor-prevents-data-loss
+      - test-interruptor-can-be-disabled
+      - test-bootstrap
+      - test-upgrade-from-previous
+      - test-arb-to-full-scaling
+      - test-verify-no-remote-access
+      - test-verify-tuning
+      - test-tls
+      - test-xenial
+      trigger: true
+      params:
+        fetch: [release-candidate]
+    - get: cf-mysql-deployment
+      passed:
+      - test-full-bosh
+      - test-scaling
+      - test-failover
+      - test-verify-cluster-schemas
+      - test-interruptor-prevents-data-loss
+      - test-interruptor-can-be-disabled
+      - test-bootstrap
+      - test-upgrade-from-previous
+      - test-arb-to-full-scaling
+      - test-verify-no-remote-access
+      - test-verify-tuning
+      - test-tls
+      - test-xenial
+    - get: cf-mysql-ci
+    - get: version
+      passed:
+      - test-full-bosh
+      - test-scaling
+      - test-failover
+      - test-verify-cluster-schemas
+      - test-interruptor-prevents-data-loss
+      - test-interruptor-can-be-disabled
+      - test-bootstrap
+      - test-upgrade-from-previous
+      - test-arb-to-full-scaling
+      - test-verify-no-remote-access
+      - test-verify-tuning
+      - test-tls
+      - test-xenial
+    - get: gcp-bosh-stemcell
+      passed: [test-full-bosh]
+  - aggregate:
+    - put: cf-mysql-release-candidate
+      params:
+        repository: cf-mysql-release
+    - put: cf-mysql-deployment-release-candidate
+      params:
+        repository: cf-mysql-deployment
+
+- name: final-release
+  serial_groups: [version-bumper]
+  plan:
+    - aggregate:
+      - get: cf-mysql-release
+        passed: [promote-to-rc]
+      - get: cf-mysql-deployment-release-candidate
+        passed: [promote-to-rc]
+      - get: cf-mysql-ci
+      - get: release-notes
+      - get: version
+        passed: [promote-to-rc]
+        params:
+          bump: final
+      - get: gcp-bosh-stemcell
+        passed: [promote-to-rc]
+    - task: create-mysql-release
+      file: cf-mysql-ci/ci/tasks/create-release/task.yml
+      input_mapping: {release-repo: cf-mysql-release}
+      output_mapping: {release-repo-modified: cf-mysql-release-final}
+      params:
+        RELEASE_NAME: cf-mysql
+        BLOBS_BUCKET_NAME: mysql-service-blobs
+        FINAL: true
+        AWS_ACCESS_KEY_ID: ((core-services-ci-credentials/Notes/cf-mysql-publish-blobs-aws-access-key-id))
+        AWS_SECRET_ACCESS_KEY: ((core-services-ci-credentials/Notes/cf-mysql-publish-blobs-aws-secret-access-key))
+    - task: commit-final-release-changes
+      file: cf-mysql-ci/ci/tasks/commit-github-release-changes/task.yml
+      input_mapping: {github-release: cf-mysql-release-final}
+      output_mapping: {github-release-committed: cf-mysql-release-committed}
+      params:
+        GIT_COMMIT_MESSAGE: commit-message/commit-message
+        REPO_DIR: cf-mysql-release-final
+        OUTPUT_DIR: cf-mysql-release-committed
+    - task: prep-github-release
+      file: cf-mysql-ci/ci/tasks/prep-github-release/task.yml
+      input_mapping: {github-release-committed: cf-mysql-release-committed}
+      params:
+        RELEASE_DIR: cf-mysql-release
+    - put: cf-mysql-master
+      params:
+        repository: cf-mysql-release-committed/cf-mysql-release-final
+        tag: output-release-dir/release-tag
+    - put: version
+      params:
+        bump: minor
+        pre: rc
+    - put: s3-resource-final-release
+      params:
+        file: release-tarball/cf-mysql-*.tgz
+    - put: publish-github-release
+      params:
+        name: output-release-dir/release-tag
+        tag: output-release-dir/release-tag
+        body: output-release-dir/generated-release-notes
+        commitish: output-release-dir/git-commit
+
+- name: finalize-cf-mysql-deployment
+  plan:
+    - aggregate:
+      - get: cf-mysql-deployment-release-candidate
+        passed: [final-release]
+      - get: cf-mysql-deployment-master
+      - get: bosh-io-release-cf-mysql-release
+        trigger: true
+      - get: runtime-ci
+      - get: gcp-bosh-stemcell
+        passed: [final-release]
+      - get: cf-mysql-ci
+    - put: cf-mysql-deployment-master
+      params:
+        repository: cf-mysql-deployment-release-candidate
+        merge: true
+    - task: update-cf-mysql-deployment-with-new-release
+      file: cf-mysql-ci/ci/tasks/update-cf-mysql-deployment-with-new-release/task.yml
+    - task: configure-tag-name
+      file: cf-mysql-ci/ci/tasks/configure-tag-name/task.yml
+    - put: cf-mysql-deployment-master
+      params:
+        repository: updated-cf-mysql-deployment-master
+        tag: tag-name/name
+
+- name: merge-cf-mysql-deployment-master-into-develop
+  plan:
+  - get: cf-mysql-deployment-master
+    trigger: true
+  - put: cf-mysql-deployment
+    params:
+      repository: cf-mysql-deployment-master
+      merge: true
+
+- name: merge-master-into-develop
+  plan:
+  - get: cf-mysql-master
+    trigger: true
+  - put: cf-mysql-release
+    params:
+      repository: cf-mysql-master
+      merge: true
+
+- name: bump-minor
+  plan:
+  - aggregate:
+    - get: version
+      params:
+        bump: minor
+  - put: version
+    params:
+      file: version/version
+
+- name: bump-major
+  plan:
+  - aggregate:
+    - get: version
+      params:
+        bump: major
+  - put: version
+    params:
+      file: version/version
