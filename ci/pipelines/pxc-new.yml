@@ -1,10 +1,4 @@
 ---
-anchors:
-  image_resource: &image_resource
-    type: docker-image
-    source:
-      repository: cloudfoundry/cf-mysql-ci
-
 resource_types:
 - name: bosh-deployment
   type: docker-image
@@ -263,69 +257,69 @@ jobs:
       passed: [bump-version, test-unit-and-integration]
       trigger: true
     - get: cf-mysql-ci
-#  - task: create-release
-#    attempts: 3
-#    file: cf-mysql-ci/ci/tasks/create-release/task.yml
-#    input_mapping: {release-repo: pxc-release}
-#    params:
-#      RELEASE_NAME: pxc
-#      BOSH_SHA2: true
-#  - put: compiled-packages-lock
-#    params:
-#      acquire: true
-#  - task: compile-release #compile pxc release on trusty
-#    file: cf-mysql-ci/ci/tasks/compile-release/task.yml
-#    params:
-#      BOSH_CLIENT: ((concourse-compilation-director/Notes/BOSH_CLIENT))
-#      BOSH_CLIENT_SECRET: ((concourse-compilation-director/Notes/BOSH_CLIENT_SECRET))
-#      BOSH_ENVIRONMENT: ((concourse-compilation-director/Notes/BOSH_ENVIRONMENT))
-#      BOSH_CA_CERT: ((concourse-compilation-director/Notes/BOSH_CA_CERT))
-#      BOSH_ALL_PROXY: ((concourse-compilation-director/Notes/BOSH_ALL_PROXY))
-#      BOSH_JUMPBOX_PRIVATE_KEY: ((concourse-compilation-director/Notes/BOSH_JUMPBOX_PRIVATE_KEY))
-#      STEMCELL_LINE: ubuntu-trusty
-#  - task: xenial-compile-release #compile pxc release on xenial
-#    file: cf-mysql-ci/ci/tasks/compile-release/task.yml
-#    input_mapping:
-#      gcp-bosh-stemcell: xenial-gcp-bosh-stemcell
-#    output_mapping:
-#      compiled-release-tarball: xenial-compiled-release-tarball
-#    params:
-#      BOSH_CLIENT: ((concourse-compilation-director/Notes/BOSH_CLIENT))
-#      BOSH_CLIENT_SECRET: ((concourse-compilation-director/Notes/BOSH_CLIENT_SECRET))
-#      BOSH_ENVIRONMENT: ((concourse-compilation-director/Notes/BOSH_ENVIRONMENT))
-#      BOSH_CA_CERT: ((concourse-compilation-director/Notes/BOSH_CA_CERT))
-#      BOSH_ALL_PROXY: ((concourse-compilation-director/Notes/BOSH_ALL_PROXY))
-#      BOSH_JUMPBOX_PRIVATE_KEY: ((concourse-compilation-director/Notes/BOSH_JUMPBOX_PRIVATE_KEY))
-#      STEMCELL_LINE: ubuntu-xenial
-#  - task: fetch-cf-deployment-rc-stemcell
-#    file: cf-mysql-ci/ci/tasks/fetch-cf-deployment-stemcell/task.yml
-#  - task: cf-deployment-pxc-compile-release #compile pxc release on cf-d's stemcell
-#    file: cf-mysql-ci/ci/tasks/compile-release/task.yml
-#    input_mapping:
-#      gcp-bosh-stemcell: cf-deployment-rc-stemcell
-#    output_mapping:
-#      compiled-release-tarball: cf-deployment-pxc-compiled-release-tarball
-#    params:
-#      BOSH_CLIENT: ((concourse-compilation-director/Notes/BOSH_CLIENT))
-#      BOSH_CLIENT_SECRET: ((concourse-compilation-director/Notes/BOSH_CLIENT_SECRET))
-#      BOSH_ENVIRONMENT: ((concourse-compilation-director/Notes/BOSH_ENVIRONMENT))
-#      BOSH_CA_CERT: ((concourse-compilation-director/Notes/BOSH_CA_CERT))
-#      BOSH_ALL_PROXY: ((concourse-compilation-director/Notes/BOSH_ALL_PROXY))
-#      BOSH_JUMPBOX_PRIVATE_KEY: ((concourse-compilation-director/Notes/BOSH_JUMPBOX_PRIVATE_KEY))
-#      STEMCELL_LINE: ubuntu-xenial
-#    ensure:
-#      put: compiled-packages-lock
-#      params:
-#        release: compiled-packages-lock
-#  - put: pxc-compiled-release
-#    params:
-#      file: compiled-release-tarball/*.tgz
-#  - put: pxc-xenial-compiled-release
-#    params:
-#      file: xenial-compiled-release-tarball/*.tgz
-#  - put: pxc-compiled-release-for-cf-deployment-rc
-#    params:
-#      file: cf-deployment-pxc-compiled-release-tarball/*.tgz
+  - task: create-release
+    attempts: 3
+    file: cf-mysql-ci/ci/tasks/create-release/task.yml
+    input_mapping: {release-repo: pxc-release}
+    params:
+      RELEASE_NAME: pxc
+      BOSH_SHA2: true
+  - put: compiled-packages-lock
+    params:
+      acquire: true
+  - task: compile-release #compile pxc release on trusty
+    file: cf-mysql-ci/ci/tasks/compile-release/task.yml
+    params:
+      BOSH_CLIENT: ((concourse-compilation-director/Notes/BOSH_CLIENT))
+      BOSH_CLIENT_SECRET: ((concourse-compilation-director/Notes/BOSH_CLIENT_SECRET))
+      BOSH_ENVIRONMENT: ((concourse-compilation-director/Notes/BOSH_ENVIRONMENT))
+      BOSH_CA_CERT: ((concourse-compilation-director/Notes/BOSH_CA_CERT))
+      BOSH_ALL_PROXY: ((concourse-compilation-director/Notes/BOSH_ALL_PROXY))
+      BOSH_JUMPBOX_PRIVATE_KEY: ((concourse-compilation-director/Notes/BOSH_JUMPBOX_PRIVATE_KEY))
+      STEMCELL_LINE: ubuntu-trusty
+  - task: xenial-compile-release #compile pxc release on xenial
+    file: cf-mysql-ci/ci/tasks/compile-release/task.yml
+    input_mapping:
+      gcp-bosh-stemcell: xenial-gcp-bosh-stemcell
+    output_mapping:
+      compiled-release-tarball: xenial-compiled-release-tarball
+    params:
+      BOSH_CLIENT: ((concourse-compilation-director/Notes/BOSH_CLIENT))
+      BOSH_CLIENT_SECRET: ((concourse-compilation-director/Notes/BOSH_CLIENT_SECRET))
+      BOSH_ENVIRONMENT: ((concourse-compilation-director/Notes/BOSH_ENVIRONMENT))
+      BOSH_CA_CERT: ((concourse-compilation-director/Notes/BOSH_CA_CERT))
+      BOSH_ALL_PROXY: ((concourse-compilation-director/Notes/BOSH_ALL_PROXY))
+      BOSH_JUMPBOX_PRIVATE_KEY: ((concourse-compilation-director/Notes/BOSH_JUMPBOX_PRIVATE_KEY))
+      STEMCELL_LINE: ubuntu-xenial
+  - task: fetch-cf-deployment-rc-stemcell
+    file: cf-mysql-ci/ci/tasks/fetch-cf-deployment-stemcell/task.yml
+  - task: cf-deployment-pxc-compile-release #compile pxc release on cf-d's stemcell
+    file: cf-mysql-ci/ci/tasks/compile-release/task.yml
+    input_mapping:
+      gcp-bosh-stemcell: cf-deployment-rc-stemcell
+    output_mapping:
+      compiled-release-tarball: cf-deployment-pxc-compiled-release-tarball
+    params:
+      BOSH_CLIENT: ((concourse-compilation-director/Notes/BOSH_CLIENT))
+      BOSH_CLIENT_SECRET: ((concourse-compilation-director/Notes/BOSH_CLIENT_SECRET))
+      BOSH_ENVIRONMENT: ((concourse-compilation-director/Notes/BOSH_ENVIRONMENT))
+      BOSH_CA_CERT: ((concourse-compilation-director/Notes/BOSH_CA_CERT))
+      BOSH_ALL_PROXY: ((concourse-compilation-director/Notes/BOSH_ALL_PROXY))
+      BOSH_JUMPBOX_PRIVATE_KEY: ((concourse-compilation-director/Notes/BOSH_JUMPBOX_PRIVATE_KEY))
+      STEMCELL_LINE: ubuntu-xenial
+    ensure:
+      put: compiled-packages-lock
+      params:
+        release: compiled-packages-lock
+  - put: pxc-compiled-release
+    params:
+      file: compiled-release-tarball/*.tgz
+  - put: pxc-xenial-compiled-release
+    params:
+      file: xenial-compiled-release-tarball/*.tgz
+  - put: pxc-compiled-release-for-cf-deployment-rc
+    params:
+      file: cf-deployment-pxc-compiled-release-tarball/*.tgz
 
 - name: test-clean-install-pxc
   plan:
@@ -349,7 +343,7 @@ jobs:
     - get: cf-acceptance-tests
     - get: cf-mysql-deployment
     - get: pxc-compiled-release-for-cf-deployment-rc
-#      passed: [create-and-compile-release]
+      passed: [create-and-compile-release]
   - do: &create-bosh-lite
     - task: apply-terraform
       file: cf-mysql-ci/ci/tasks/apply-bosh-lite-terraform/task.yml
@@ -425,9 +419,9 @@ jobs:
     - get: pxc-release
       passed: [create-and-compile-release]
     - get: pxc-xenial-compiled-release
-#      passed: [create-and-compile-release]
+      passed: [create-and-compile-release]
     - get: pxc-compiled-release-for-cf-deployment-rc
-#      passed: [create-and-compile-release]
+      passed: [create-and-compile-release]
     - get: cf-mysql-ci
     - get: bosh-deployment
       resource: bosh-deployment-repo
@@ -564,7 +558,7 @@ jobs:
       passed: [create-and-compile-release]
       trigger: true
     - get: pxc-compiled-release
-#      passed: [create-and-compile-release]
+      passed: [create-and-compile-release]
     - get: bpm-release
   - task: check-last-pxc-release-version
     file: cf-mysql-ci/ci/tasks/check-last-pxc-release-version/task.yml
@@ -653,7 +647,7 @@ jobs:
     - get: cf-mysql-deployment
     - get: compiled-release-tarball
       resource: pxc-compiled-release
-#      passed: [create-and-compile-release]
+      passed: [create-and-compile-release]
     - get: bpm-release
   - do: *create-bosh-lite
   - put: pxc-bosh-deployment
@@ -711,7 +705,7 @@ jobs:
         - get: cf-mysql-deployment
         - get: compiled-release-tarball
           resource: pxc-compiled-release
-#          passed: [create-and-compile-release]
+          passed: [create-and-compile-release]
         - get: bpm-release
     - do: *create-bosh-lite
     - put: pxc-bosh-deployment
@@ -758,7 +752,7 @@ jobs:
         - get: cf-mysql-deployment
         - get: compiled-release-tarball
           resource: pxc-compiled-release
-#          passed: [create-and-compile-release]
+          passed: [create-and-compile-release]
         - get: bpm-release
     - do: *create-bosh-lite
     - put: pxc-bosh-deployment
@@ -813,7 +807,7 @@ jobs:
     - get: cf-mysql-deployment
     - get: compiled-release-tarball
       resource: pxc-compiled-release
-#      passed: [create-and-compile-release]
+      passed: [create-and-compile-release]
     - get: bpm-release
   - do: *create-bosh-lite
   - put: pxc-bosh-deployment
@@ -870,7 +864,7 @@ jobs:
     - get: cf-mysql-deployment
     - get: compiled-release-tarball
       resource: pxc-compiled-release
-#      passed: [create-and-compile-release]
+      passed: [create-and-compile-release]
     - get: bpm-release
   - do: *create-bosh-lite
   - put: pxc-bosh-deployment
@@ -916,7 +910,7 @@ jobs:
         - get: cf-mysql-deployment
         - get: compiled-release-tarball
           resource: pxc-compiled-release
-#          passed: [create-and-compile-release]
+          passed: [create-and-compile-release]
         - get: bpm-release
     - do: *create-bosh-lite
     - put: pxc-bosh-deployment
@@ -971,7 +965,7 @@ jobs:
         - get: cf-mysql-deployment
         - get: compiled-release-tarball
           resource: pxc-compiled-release
-#          passed: [create-and-compile-release]
+          passed: [create-and-compile-release]
         - get: bpm-release
     - do: *create-bosh-lite
     - put: pxc-bosh-deployment
@@ -1026,7 +1020,7 @@ jobs:
     - get: cf-mysql-deployment
     - get: compiled-release-tarball
       resource: pxc-compiled-release
-#      passed: [create-and-compile-release]
+      passed: [create-and-compile-release]
     - get: bpm-release
   - do: *create-bosh-lite
   - put: pxc-bosh-deployment
