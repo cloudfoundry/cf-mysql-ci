@@ -36,7 +36,7 @@ resources:
   type: git
   source:
     uri: https://github.com/cloudfoundry-incubator/cf-mysql-ci.git
-    branch: wip-another-new-pxc-162721103
+    branch: master
 
 - name: cf-deployment-concourse-tasks
   type: git
