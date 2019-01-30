@@ -10,6 +10,7 @@ inputs:
 - name: cf-mysql-ci
 - name: release-repo
 - name: version
+  optional: true
 
 outputs:
 - name: commit-message
