@@ -7,13 +7,13 @@ image_resource:
   type: docker-image
 
 inputs:
-- name: release-notes
 - name: cf-mysql-ci
 - name: github-release-committed
+- name: release-notes
 - name: version
+
 outputs:
 - name: output-release-dir
-params:
-  RELEASE_DIR:
+
 run:
   path: cf-mysql-ci/ci/tasks/prep-github-release/task.sh

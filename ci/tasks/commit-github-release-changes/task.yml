@@ -8,13 +8,14 @@ image_resource:
 
 inputs:
 - name: cf-mysql-ci
-- name: github-release
 - name: commit-message
+- name: github-release
+
 outputs:
 - name: github-release-committed
+
 params:
   GIT_COMMIT_MESSAGE:
-  REPO_DIR:
-  OUTPUT_DIR:
+
 run:
   path: cf-mysql-ci/ci/tasks/commit-github-release-changes/task.sh
