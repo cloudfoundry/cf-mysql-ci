@@ -10,6 +10,7 @@ inputs:
 - name: release-notes
 - name: cf-mysql-ci
 - name: github-release-committed
+- name: version
 outputs:
 - name: output-release-dir
 params:
