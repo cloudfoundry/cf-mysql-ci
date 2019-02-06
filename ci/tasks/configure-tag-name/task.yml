@@ -14,5 +14,5 @@ outputs:
   - name: tag-name
 
 run:
-  path: cf-mysql-ci/ci/configure-tag-name/task.sh
+  path: cf-mysql-ci/ci/tasks/configure-tag-name/task.sh
 
