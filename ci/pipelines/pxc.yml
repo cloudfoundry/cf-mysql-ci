@@ -1177,16 +1177,12 @@ jobs:
       output_mapping: {github-release-committed: pxc-release-committed}
       params:
         GIT_COMMIT_MESSAGE: commit-message/commit-message
-        REPO_DIR: pxc-release-final
-        OUTPUT_DIR: pxc-release-committed
     - task: prep-github-release
       file: cf-mysql-ci/ci/tasks/prep-github-release/task.yml
       input_mapping: {github-release-committed: pxc-release-committed}
-      params:
-        RELEASE_DIR: pxc-release
     - put: pxc-release
       params:
-        repository: pxc-release-committed/pxc-release-final
+        repository: pxc-release-committed
         tag: output-release-dir/release-tag
     - put: version
       params:

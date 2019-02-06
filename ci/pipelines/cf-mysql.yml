@@ -1374,16 +1374,12 @@ jobs:
       output_mapping: {github-release-committed: cf-mysql-release-committed}
       params:
         GIT_COMMIT_MESSAGE: commit-message/commit-message
-        REPO_DIR: cf-mysql-release-final
-        OUTPUT_DIR: cf-mysql-release-committed
     - task: prep-github-release
       file: cf-mysql-ci/ci/tasks/prep-github-release/task.yml
       input_mapping: {github-release-committed: cf-mysql-release-committed}
-      params:
-        RELEASE_DIR: cf-mysql-release
     - put: cf-mysql-master
       params:
-        repository: cf-mysql-release-committed/cf-mysql-release-final
+        repository: cf-mysql-release-committed
         tag: output-release-dir/release-tag
     - put: version
       params:
