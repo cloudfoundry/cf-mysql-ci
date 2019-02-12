@@ -2,6 +2,8 @@
 
 set -eux -o pipefail
 
+: "${BOSH_DEPLOYMENT:?}"
+
 WORKSPACE_DIR="$(pwd)"
 CI_DIR="${WORKSPACE_DIR}/cf-mysql-ci"
 
@@ -18,6 +20,8 @@ export BOSH_CLIENT_SECRET
 
 BOSH_CA_CERT=${BOSH_CA_CERT:-"$(jq_val "ca_cert" "${ENV_METADATA}")"}
 export BOSH_CA_CERT
+
+export BOSH_DEPLOYMENT
 
 bosh -n delete-deployment
 

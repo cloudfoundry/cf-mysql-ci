@@ -6,6 +6,7 @@ WORKSPACE_DIR="$(pwd)"
 ci_dir="cf-mysql-ci"
 source "${ci_dir}/scripts/utils.sh"
 
+: "${BOSH_DEPLOYMENT:?}"
 : "${ENV_METADATA:?}"
 : "${ERRAND:?}"
 
@@ -20,6 +21,8 @@ export BOSH_CLIENT_SECRET
 
 BOSH_CA_CERT=$(jq_val "ca_cert" "${ENV_METADATA}")
 export BOSH_CA_CERT
+
+export BOSH_DEPLOYMENT
 
 bosh \
     -n \
