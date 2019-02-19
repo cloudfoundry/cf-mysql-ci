@@ -123,7 +123,7 @@ resources:
     bucket: pxc-releases
     access_key_id: ((core-services-ci-credentials/Notes/cf-mysql-ci-aws-access-key-id))
     secret_access_key: ((core-services-ci-credentials/Notes/cf-mysql-ci-aws-secret-access-key))
-    key: version
+    key: version-spike-163076070
     initial_version: 0.1.0
 
 - name: weekly-trigger
@@ -224,7 +224,7 @@ jobs:
       file: cf-mysql-ci/ci/tasks/run-galera-init-integration/task.yml
       privileged: true
 
-- name: create-and-compile-release
+- name: create-and-upload-release
   plan:
   - aggregate:
     - get: pxc-release
@@ -250,68 +250,22 @@ jobs:
     params:
       RELEASE_NAME: pxc
       BOSH_SHA2: true
-  - put: compiled-packages-lock
-    params:
-      acquire: true
-  - task: compile-release #compile pxc release on trusty
-    file: cf-mysql-ci/ci/tasks/compile-release/task.yml
-    params:
-      BOSH_CLIENT: ((concourse-compilation-director/Notes/BOSH_CLIENT))
-      BOSH_CLIENT_SECRET: ((concourse-compilation-director/Notes/BOSH_CLIENT_SECRET))
-      BOSH_ENVIRONMENT: ((concourse-compilation-director/Notes/BOSH_ENVIRONMENT))
-      BOSH_CA_CERT: ((concourse-compilation-director/Notes/BOSH_CA_CERT))
-      BOSH_ALL_PROXY: ((concourse-compilation-director/Notes/BOSH_ALL_PROXY))
-      BOSH_JUMPBOX_PRIVATE_KEY: ((concourse-compilation-director/Notes/BOSH_JUMPBOX_PRIVATE_KEY))
-      STEMCELL_LINE: ubuntu-trusty
-  - task: xenial-compile-release #compile pxc release on xenial
-    file: cf-mysql-ci/ci/tasks/compile-release/task.yml
-    input_mapping:
-      gcp-bosh-stemcell: xenial-gcp-bosh-stemcell
-    output_mapping:
-      compiled-release-tarball: xenial-compiled-release-tarball
-    params:
-      BOSH_CLIENT: ((concourse-compilation-director/Notes/BOSH_CLIENT))
-      BOSH_CLIENT_SECRET: ((concourse-compilation-director/Notes/BOSH_CLIENT_SECRET))
-      BOSH_ENVIRONMENT: ((concourse-compilation-director/Notes/BOSH_ENVIRONMENT))
-      BOSH_CA_CERT: ((concourse-compilation-director/Notes/BOSH_CA_CERT))
-      BOSH_ALL_PROXY: ((concourse-compilation-director/Notes/BOSH_ALL_PROXY))
-      BOSH_JUMPBOX_PRIVATE_KEY: ((concourse-compilation-director/Notes/BOSH_JUMPBOX_PRIVATE_KEY))
-      STEMCELL_LINE: ubuntu-xenial
-  - task: fetch-cf-deployment-rc-stemcell
-    file: cf-mysql-ci/ci/tasks/fetch-cf-deployment-stemcell/task.yml
-  - task: cf-deployment-pxc-compile-release #compile pxc release on cf-d's stemcell
-    file: cf-mysql-ci/ci/tasks/compile-release/task.yml
-    input_mapping:
-      gcp-bosh-stemcell: cf-deployment-rc-stemcell
-    output_mapping:
-      compiled-release-tarball: cf-deployment-pxc-compiled-release-tarball
-    params:
-      BOSH_CLIENT: ((concourse-compilation-director/Notes/BOSH_CLIENT))
-      BOSH_CLIENT_SECRET: ((concourse-compilation-director/Notes/BOSH_CLIENT_SECRET))
-      BOSH_ENVIRONMENT: ((concourse-compilation-director/Notes/BOSH_ENVIRONMENT))
-      BOSH_CA_CERT: ((concourse-compilation-director/Notes/BOSH_CA_CERT))
-      BOSH_ALL_PROXY: ((concourse-compilation-director/Notes/BOSH_ALL_PROXY))
-      BOSH_JUMPBOX_PRIVATE_KEY: ((concourse-compilation-director/Notes/BOSH_JUMPBOX_PRIVATE_KEY))
-      STEMCELL_LINE: ubuntu-xenial
-    ensure:
-      put: compiled-packages-lock
-      params:
-        release: compiled-packages-lock
-  - put: pxc-compiled-release
-    params:
-      file: compiled-release-tarball/*.tgz
-  - put: pxc-xenial-compiled-release
-    params:
-      file: xenial-compiled-release-tarball/*.tgz
-  - put: pxc-compiled-release-for-cf-deployment-rc
-    params:
-      file: cf-deployment-pxc-compiled-release-tarball/*.tgz
+  - task: upload-release
+    attempts: 3
+    config:
+      platform: linux
+      image_resource: cloudfoundry/cf-mysql-ci
+      outputs:
+        - name: version???
+      run:
+        path: /bin/bash
+        args: ["-cx", "bosh upload-release ???"]
 
 - name: test-clean-install-pxc
   plan:
   - aggregate:
     - get: pxc-release
-      passed: [create-and-compile-release]
+      passed: [create-and-upload-release]
     - get: cf-mysql-ci
     - get: bosh-deployment
       resource: bosh-deployment-repo
@@ -319,9 +273,9 @@ jobs:
       resource: deployments-configuration
     - get: stemcell
       resource: xenial-bosh-lite-stemcell
-      passed: [create-and-compile-release]
+      passed: [create-and-upload-release]
     - get: version
-      passed: [create-and-compile-release]
+      passed: [create-and-upload-release]
       trigger: true
     - get: cf-deployment
       resource: cf-deployment-release-candidate
@@ -329,41 +283,7 @@ jobs:
     - get: cf-acceptance-tests
     - get: cf-mysql-deployment
     - get: pxc-compiled-release-for-cf-deployment-rc
-      passed: [create-and-compile-release]
-  - do: &create-bosh-lite
-    - task: apply-terraform
-      file: cf-mysql-ci/ci/tasks/apply-bosh-lite-terraform/task.yml
-    - task: create-bosh-lite
-      file: cf-mysql-ci/ci/tasks/create-bosh-lite/task.yml
-      input_mapping: {deployments: deployments-terraformed}
-      params:
-        PROJECT_ID: ((core-services-ci-credentials/Notes/gcp-bosh-lite-project-id))
-        ZONE: ((core-services-ci-credentials/Notes/gcp-bosh-lite-zone))
-        NETWORK: ((core-services-ci-credentials/Notes/gcp-bosh-lite-network))
-        SUBNETWORK: ((core-services-ci-credentials/Notes/gcp-bosh-lite-subnetwork))
-        BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
-    - aggregate:
-      - task: create-dns
-        file: cf-mysql-ci/ci/tasks/create-dns/task.yml
-        attempts: 5
-      - task: delete-stemcell
-        file: cf-mysql-ci/ci/tasks/delete-stemcell/task.yml
-      - do:
-        - task: generate-cloud-config
-          file: cf-mysql-ci/ci/tasks/generate-cloud-config/task.yml
-        - task: update-cloud-config
-          file: cf-mysql-ci/ci/tasks/update-cloud-config/task.yml
-          params:
-            BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
-            BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
-            ENV_TARGET_FILE: bosh-lite-info/director-url
-            BOSH_CA_CERT_PATH: bosh-lite-info/ca-cert
-            CLOUD_CONFIG: cloud-config/cloud-config.yml
-  - task: bosh-upload-stemcell-from-cf-deployment
-    file: cf-deployment-concourse-tasks/bosh-upload-stemcell-from-cf-deployment/task.yml
-    input_mapping: {bbl-state: bosh-lite-info}
-    params:
-      INFRASTRUCTURE: bosh-lite
+      passed: [create-and-upload-release]
   - put: cf-bosh-deployment
     params:
       manifest: cf-deployment/cf-deployment.yml
@@ -382,7 +302,7 @@ jobs:
       - url/url-vars.yml
       vars:
         vm_extension: mysql-proxy-lb
-      source_file: bosh-lite-info/bosh-deployment-resource-source-file
+      source_file: NEW-SOURCE-FILE
   - task: test-galera-encryption
     file: cf-mysql-ci/ci/tasks/test-galera-encryption/task.yml
   - task: run-cats
@@ -407,7 +327,7 @@ jobs:
       trigger: true
     - get: dev-pxc-release-source
       resource: pxc-release
-      passed: [create-and-compile-release]
+      passed: [create-and-upload-release]
       trigger: true
     - get: cf-mysql-ci
     - get: bosh-deployment
@@ -417,16 +337,16 @@ jobs:
     - get: cf-mysql-deployment # used for it's cloud config
     - get: stemcell
       resource: bosh-lite-stemcell
-      passed: [create-and-compile-release]
+      passed: [create-and-upload-release]
     - get: gcp-bosh-stemcell
-      passed: [create-and-compile-release]
+      passed: [create-and-upload-release]
     - get: cf-deployment
       resource: cf-deployment-release-candidate
     - get: version
-      passed: [create-and-compile-release]
+      passed: [create-and-upload-release]
       trigger: true
     - get: pxc-compiled-release
-      passed: [create-and-compile-release]
+      passed: [create-and-upload-release]
     - get: bpm-release
   - task: check-last-pxc-release-version
     file: cf-mysql-ci/ci/tasks/check-last-pxc-release-version/task.yml
@@ -450,7 +370,6 @@ jobs:
         put: compiled-packages-lock
         params:
           release: compiled-packages-lock
-    - do: *create-bosh-lite
   - put: deploy-last-pxc-release
     resource: pxc-bosh-deployment
     params:
@@ -463,7 +382,7 @@ jobs:
       - compiled-last-pxc-release/*.tgz
       stemcells:
       - stemcell/*.tgz
-      source_file: bosh-lite-info/bosh-deployment-resource-source-file
+      source_file: NEW-SOURCE-FILE
   - task: load-test-data
     file: cf-mysql-ci/ci/tasks/load-test-data/task.yml
   - put: upgrade-to-dev-pxc-release
@@ -479,7 +398,7 @@ jobs:
       - bpm-release/*.tgz
       stemcells:
       - stemcell/*.tgz
-      source_file: bosh-lite-info/bosh-deployment-resource-source-file
+      source_file: NEW-SOURCE-FILE
   - task: verify-db-matches-upgrade-test-data
     file: cf-mysql-ci/ci/tasks/verify-db-matches-upgrade-test-data/task.yml
   - task: smoke-tests
@@ -496,7 +415,7 @@ jobs:
   plan:
   - aggregate:
     - get: pxc-release
-      passed: [create-and-compile-release]
+      passed: [create-and-upload-release]
     - get: cf-mysql-ci
     - get: bosh-deployment
       resource: bosh-deployment-repo
@@ -504,9 +423,9 @@ jobs:
       resource: deployments-configuration
     - get: stemcell
       resource: bosh-lite-stemcell
-      passed: [create-and-compile-release]
+      passed: [create-and-upload-release]
     - get: version
-      passed: [create-and-compile-release]
+      passed: [create-and-upload-release]
       trigger: true
     - get: cf-deployment
       resource: cf-deployment-release-candidate
@@ -515,9 +434,8 @@ jobs:
     - get: cf-mysql-deployment
     - get: compiled-release-tarball
       resource: pxc-compiled-release
-      passed: [create-and-compile-release]
+      passed: [create-and-upload-release]
     - get: bpm-release
-  - do: *create-bosh-lite
   - put: pxc-bosh-deployment
     params:
       manifest: pxc-release/pxc-deployment.yml
@@ -526,7 +444,7 @@ jobs:
       - bpm-release/*.tgz
       stemcells:
       - stemcell/*.tgz
-      source_file: bosh-lite-info/bosh-deployment-resource-source-file
+      source_file: NEW-SOURCE-FILE
       ops_files:
       - pxc-release/operations/use-clustered.yml
       - cf-mysql-ci/operations/pxc/add-proxy-load-balancer.yml
@@ -554,7 +472,7 @@ jobs:
   plan:
     - aggregate:
         - get: pxc-release
-          passed: [create-and-compile-release]
+          passed: [create-and-upload-release]
         - get: cf-mysql-ci
         - get: bosh-deployment
           resource: bosh-deployment-repo
@@ -562,9 +480,9 @@ jobs:
           resource: deployments-configuration
         - get: stemcell
           resource: bosh-lite-stemcell
-          passed: [create-and-compile-release]
+          passed: [create-and-upload-release]
         - get: version
-          passed: [create-and-compile-release]
+          passed: [create-and-upload-release]
           trigger: true
         - get: cf-deployment
           resource: cf-deployment-release-candidate
@@ -573,9 +491,8 @@ jobs:
         - get: cf-mysql-deployment
         - get: compiled-release-tarball
           resource: pxc-compiled-release
-          passed: [create-and-compile-release]
+          passed: [create-and-upload-release]
         - get: bpm-release
-    - do: *create-bosh-lite
     - put: pxc-bosh-deployment
       params:
         manifest: pxc-release/pxc-deployment.yml
@@ -584,7 +501,7 @@ jobs:
           - bpm-release/*.tgz
         stemcells:
           - stemcell/*.tgz
-        source_file: bosh-lite-info/bosh-deployment-resource-source-file
+        source_file: NEW-SOURCE-FILE
         ops_files:
           - pxc-release/operations/use-clustered.yml
           - cf-mysql-ci/operations/pxc/add-proxy-load-balancer.yml
@@ -601,7 +518,7 @@ jobs:
   plan:
     - aggregate:
         - get: pxc-release
-          passed: [create-and-compile-release]
+          passed: [create-and-upload-release]
         - get: cf-mysql-ci
         - get: bosh-deployment
           resource: bosh-deployment-repo
@@ -609,9 +526,9 @@ jobs:
           resource: deployments-configuration
         - get: stemcell
           resource: bosh-lite-stemcell
-          passed: [create-and-compile-release]
+          passed: [create-and-upload-release]
         - get: version
-          passed: [create-and-compile-release]
+          passed: [create-and-upload-release]
           trigger: true
         - get: cf-deployment
           resource: cf-deployment-release-candidate
@@ -620,9 +537,8 @@ jobs:
         - get: cf-mysql-deployment
         - get: compiled-release-tarball
           resource: pxc-compiled-release
-          passed: [create-and-compile-release]
+          passed: [create-and-upload-release]
         - get: bpm-release
-    - do: *create-bosh-lite
     - put: pxc-bosh-deployment
       params:
         manifest: pxc-release/pxc-deployment.yml
@@ -631,7 +547,7 @@ jobs:
           - bpm-release/*.tgz
         stemcells:
           - stemcell/*.tgz
-        source_file: bosh-lite-info/bosh-deployment-resource-source-file
+        source_file: NEW-SOURCE-FILE
         ops_files:
           - pxc-release/operations/use-clustered.yml
           - cf-mysql-ci/operations/pxc/add-proxy-load-balancer.yml
@@ -656,7 +572,7 @@ jobs:
   plan:
   - aggregate:
     - get: pxc-release
-      passed: [create-and-compile-release]
+      passed: [create-and-upload-release]
     - get: cf-mysql-ci
     - get: bosh-deployment
       resource: bosh-deployment-repo
@@ -664,9 +580,9 @@ jobs:
       resource: deployments-configuration
     - get: stemcell
       resource: bosh-lite-stemcell
-      passed: [create-and-compile-release]
+      passed: [create-and-upload-release]
     - get: version
-      passed: [create-and-compile-release]
+      passed: [create-and-upload-release]
       trigger: true
     - get: cf-deployment
       resource: cf-deployment-release-candidate
@@ -675,9 +591,8 @@ jobs:
     - get: cf-mysql-deployment
     - get: compiled-release-tarball
       resource: pxc-compiled-release
-      passed: [create-and-compile-release]
+      passed: [create-and-upload-release]
     - get: bpm-release
-  - do: *create-bosh-lite
   - put: pxc-bosh-deployment
     params:
       manifest: pxc-release/pxc-deployment.yml
@@ -686,7 +601,7 @@ jobs:
       - bpm-release/*.tgz
       stemcells:
       - stemcell/*.tgz
-      source_file: bosh-lite-info/bosh-deployment-resource-source-file
+      source_file: NEW-SOURCE-FILE
       ops_files:
       - pxc-release/operations/use-clustered.yml
       - cf-mysql-ci/operations/pxc/add-proxy-load-balancer.yml
@@ -713,7 +628,7 @@ jobs:
   plan:
   - aggregate:
     - get: pxc-release
-      passed: [create-and-compile-release]
+      passed: [create-and-upload-release]
     - get: cf-mysql-ci
     - get: bosh-deployment
       resource: bosh-deployment-repo
@@ -721,9 +636,9 @@ jobs:
       resource: deployments-configuration
     - get: stemcell
       resource: bosh-lite-stemcell
-      passed: [create-and-compile-release]
+      passed: [create-and-upload-release]
     - get: version
-      passed: [create-and-compile-release]
+      passed: [create-and-upload-release]
       trigger: true
     - get: cf-deployment
       resource: cf-deployment-release-candidate
@@ -732,9 +647,8 @@ jobs:
     - get: cf-mysql-deployment
     - get: compiled-release-tarball
       resource: pxc-compiled-release
-      passed: [create-and-compile-release]
+      passed: [create-and-upload-release]
     - get: bpm-release
-  - do: *create-bosh-lite
   - put: pxc-bosh-deployment
     params:
       manifest: pxc-release/pxc-deployment.yml
@@ -743,7 +657,7 @@ jobs:
       - bpm-release/*.tgz
       stemcells:
       - stemcell/*.tgz
-      source_file: bosh-lite-info/bosh-deployment-resource-source-file
+      source_file: NEW-SOURCE-FILE
       ops_files:
       - pxc-release/operations/use-clustered.yml
       - cf-mysql-ci/operations/pxc/add-proxy-load-balancer.yml
@@ -759,7 +673,7 @@ jobs:
   plan:
     - aggregate:
         - get: pxc-release
-          passed: [create-and-compile-release]
+          passed: [create-and-upload-release]
         - get: cf-mysql-ci
         - get: bosh-deployment
           resource: bosh-deployment-repo
@@ -767,9 +681,9 @@ jobs:
           resource: deployments-configuration
         - get: stemcell
           resource: bosh-lite-stemcell
-          passed: [create-and-compile-release]
+          passed: [create-and-upload-release]
         - get: version
-          passed: [create-and-compile-release]
+          passed: [create-and-upload-release]
           trigger: true
         - get: cf-deployment
           resource: cf-deployment-release-candidate
@@ -778,9 +692,8 @@ jobs:
         - get: cf-mysql-deployment
         - get: compiled-release-tarball
           resource: pxc-compiled-release
-          passed: [create-and-compile-release]
+          passed: [create-and-upload-release]
         - get: bpm-release
-    - do: *create-bosh-lite
     - put: pxc-bosh-deployment
       params:
         manifest: pxc-release/pxc-deployment.yml
@@ -789,7 +702,7 @@ jobs:
           - bpm-release/*.tgz
         stemcells:
           - stemcell/*.tgz
-        source_file: bosh-lite-info/bosh-deployment-resource-source-file
+        source_file: NEW-SOURCE-FILE
         ops_files:
           - pxc-release/operations/use-clustered.yml
           - cf-mysql-ci/operations/pxc/add-proxy-load-balancer.yml
@@ -814,7 +727,7 @@ jobs:
   plan:
     - aggregate:
         - get: pxc-release
-          passed: [create-and-compile-release]
+          passed: [create-and-upload-release]
         - get: cf-mysql-ci
         - get: bosh-deployment
           resource: bosh-deployment-repo
@@ -822,9 +735,9 @@ jobs:
           resource: deployments-configuration
         - get: stemcell
           resource: bosh-lite-stemcell
-          passed: [create-and-compile-release]
+          passed: [create-and-upload-release]
         - get: version
-          passed: [create-and-compile-release]
+          passed: [create-and-upload-release]
           trigger: true
         - get: cf-deployment
           resource: cf-deployment-release-candidate
@@ -833,9 +746,8 @@ jobs:
         - get: cf-mysql-deployment
         - get: compiled-release-tarball
           resource: pxc-compiled-release
-          passed: [create-and-compile-release]
+          passed: [create-and-upload-release]
         - get: bpm-release
-    - do: *create-bosh-lite
     - put: pxc-bosh-deployment
       params:
         manifest: pxc-release/pxc-deployment.yml
@@ -844,7 +756,7 @@ jobs:
           - bpm-release/*.tgz
         stemcells:
           - stemcell/*.tgz
-        source_file: bosh-lite-info/bosh-deployment-resource-source-file
+        source_file: NEW-SOURCE-FILE
         ops_files:
           - pxc-release/operations/use-clustered.yml
           - cf-mysql-ci/operations/pxc/add-proxy-load-balancer.yml
@@ -869,7 +781,7 @@ jobs:
   plan:
   - aggregate:
     - get: pxc-release
-      passed: [create-and-compile-release]
+      passed: [create-and-upload-release]
     - get: cf-mysql-ci
     - get: bosh-deployment
       resource: bosh-deployment-repo
@@ -877,9 +789,9 @@ jobs:
       resource: deployments-configuration
     - get: stemcell
       resource: bosh-lite-stemcell
-      passed: [create-and-compile-release]
+      passed: [create-and-upload-release]
     - get: version
-      passed: [create-and-compile-release]
+      passed: [create-and-upload-release]
       trigger: true
     - get: cf-deployment
       resource: cf-deployment-release-candidate
@@ -888,9 +800,8 @@ jobs:
     - get: cf-mysql-deployment
     - get: compiled-release-tarball
       resource: pxc-compiled-release
-      passed: [create-and-compile-release]
+      passed: [create-and-upload-release]
     - get: bpm-release
-  - do: *create-bosh-lite
   - put: pxc-bosh-deployment
     params:
       manifest: pxc-release/pxc-deployment.yml
@@ -899,7 +810,7 @@ jobs:
       - compiled-release-tarball/*.tgz
       stemcells:
       - stemcell/*.tgz
-      source_file: bosh-lite-info/bosh-deployment-resource-source-file
+      source_file: NEW-SOURCE-FILE
   - task: smoke-tests
     file: cf-mysql-ci/ci/tasks/run-errand/task.yml
     params:
@@ -914,7 +825,7 @@ jobs:
   plan:
   - aggregate:
     - get: pxc-release
-      passed: [create-and-compile-release]
+      passed: [create-and-upload-release]
       trigger: true
     - get: cf-mysql-ci
     - get: cf-mysql-deployment
@@ -929,7 +840,7 @@ jobs:
     - get: cf-deployment
       resource: cf-deployment-release-candidate
     - get: version
-      passed: [create-and-compile-release]
+      passed: [create-and-upload-release]
       trigger: true
     - get: bpm-release
   - task: gate-on-stemcells
@@ -961,7 +872,6 @@ jobs:
         put: compiled-packages-lock
         params:
           release: compiled-packages-lock
-    - do: *create-bosh-lite
   - put: pxc-bosh-deployment
     params:
       manifest: pxc-release/pxc-deployment.yml
@@ -970,7 +880,7 @@ jobs:
       - compiled-release-tarball/*.tgz
       stemcells:
       - stemcell/*.tgz
-      source_file: bosh-lite-info/bosh-deployment-resource-source-file
+      source_file: NEW-SOURCE-FILE
       ops_files:
       - pxc-release/operations/use-clustered.yml
       - pxc-release/operations/xenial-stemcell.yml
