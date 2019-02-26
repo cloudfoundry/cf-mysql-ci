@@ -177,13 +177,13 @@ jobs:
   serial_groups: [version-bumper]
   plan:
   - aggregate:
-    - get: bosh-lite-stemcell
-      trigger: true
     - get: gcp-bosh-stemcell
       trigger: true
-    - get: xenial-bosh-lite-stemcell
+    - get: bosh-lite-stemcell
       trigger: true
     - get: xenial-gcp-bosh-stemcell
+      trigger: true
+    - get: xenial-bosh-lite-stemcell
       trigger: true
     - get: pxc-release
       trigger: true
@@ -193,8 +193,11 @@ jobs:
       trigger: true
     - get: version
     - get: cf-mysql-ci
-  - task: gate-on-stemcells
+  - task: gate-on-trusty-stemcells
     file: cf-mysql-ci/ci/tasks/gate-on-stemcells/task.yml
+    input_mapping:
+      gcp-bosh-stemcell: gcp-bosh-stemcell
+      bosh-lite-stemcell: bosh-lite-stemcell
   - task: gate-on-xenial-stemcells
     file: cf-mysql-ci/ci/tasks/gate-on-stemcells/task.yml
     input_mapping:
@@ -416,9 +419,10 @@ jobs:
       resource: deployments-configuration
     - get: cf-mysql-deployment # used for it's cloud config
     - get: stemcell
-      resource: bosh-lite-stemcell
+      resource: xenial-bosh-lite-stemcell
       passed: [create-and-compile-release]
     - get: gcp-bosh-stemcell
+      resource: xenial-gcp-bosh-stemcell
       passed: [create-and-compile-release]
     - get: cf-deployment
       resource: cf-deployment-release-candidate
@@ -503,7 +507,7 @@ jobs:
     - get: deployments
       resource: deployments-configuration
     - get: stemcell
-      resource: bosh-lite-stemcell
+      resource: xenial-bosh-lite-stemcell
       passed: [create-and-compile-release]
     - get: version
       passed: [create-and-compile-release]
@@ -561,7 +565,7 @@ jobs:
         - get: deployments
           resource: deployments-configuration
         - get: stemcell
-          resource: bosh-lite-stemcell
+          resource: xenial-bosh-lite-stemcell
           passed: [create-and-compile-release]
         - get: version
           passed: [create-and-compile-release]
@@ -608,7 +612,7 @@ jobs:
         - get: deployments
           resource: deployments-configuration
         - get: stemcell
-          resource: bosh-lite-stemcell
+          resource: xenial-bosh-lite-stemcell
           passed: [create-and-compile-release]
         - get: version
           passed: [create-and-compile-release]
@@ -663,7 +667,7 @@ jobs:
     - get: deployments
       resource: deployments-configuration
     - get: stemcell
-      resource: bosh-lite-stemcell
+      resource: xenial-bosh-lite-stemcell
       passed: [create-and-compile-release]
     - get: version
       passed: [create-and-compile-release]
@@ -720,7 +724,7 @@ jobs:
     - get: deployments
       resource: deployments-configuration
     - get: stemcell
-      resource: bosh-lite-stemcell
+      resource: xenial-bosh-lite-stemcell
       passed: [create-and-compile-release]
     - get: version
       passed: [create-and-compile-release]
@@ -766,7 +770,7 @@ jobs:
         - get: deployments
           resource: deployments-configuration
         - get: stemcell
-          resource: bosh-lite-stemcell
+          resource: xenial-bosh-lite-stemcell
           passed: [create-and-compile-release]
         - get: version
           passed: [create-and-compile-release]
@@ -821,7 +825,7 @@ jobs:
         - get: deployments
           resource: deployments-configuration
         - get: stemcell
-          resource: bosh-lite-stemcell
+          resource: xenial-bosh-lite-stemcell
           passed: [create-and-compile-release]
         - get: version
           passed: [create-and-compile-release]
@@ -876,7 +880,7 @@ jobs:
     - get: deployments
       resource: deployments-configuration
     - get: stemcell
-      resource: bosh-lite-stemcell
+      resource: xenial-bosh-lite-stemcell
       passed: [create-and-compile-release]
     - get: version
       passed: [create-and-compile-release]
@@ -910,7 +914,7 @@ jobs:
       INSTANCE: mysql/0
   - do: *teardown-bosh-lite
 
-- name: test-xenial
+- name: test-trusty
   plan:
   - aggregate:
     - get: pxc-release
@@ -923,9 +927,9 @@ jobs:
     - get: deployments
       resource: deployments-configuration
     - get: stemcell
-      resource: xenial-bosh-lite-stemcell
+      resource: bosh-lite-stemcell
     - get: gcp-bosh-stemcell
-      resource: xenial-gcp-bosh-stemcell
+      resource: gcp-bosh-stemcell
     - get: cf-deployment
       resource: cf-deployment-release-candidate
     - get: version
@@ -956,7 +960,7 @@ jobs:
           BOSH_CA_CERT: ((concourse-compilation-director/Notes/BOSH_CA_CERT))
           BOSH_ALL_PROXY: ((concourse-compilation-director/Notes/BOSH_ALL_PROXY))
           BOSH_JUMPBOX_PRIVATE_KEY: ((concourse-compilation-director/Notes/BOSH_JUMPBOX_PRIVATE_KEY))
-          STEMCELL_LINE: ubuntu-xenial
+          STEMCELL_LINE: ubuntu-trusty
       ensure:
         put: compiled-packages-lock
         params:
@@ -973,7 +977,7 @@ jobs:
       source_file: bosh-lite-info/bosh-deployment-resource-source-file
       ops_files:
       - pxc-release/operations/use-clustered.yml
-      - pxc-release/operations/xenial-stemcell.yml
+      - pxc-release/operations/trusty-stemcell.yml
   - task: smoke-tests
     file: cf-mysql-ci/ci/tasks/run-errand/task.yml
     params:
@@ -997,7 +1001,7 @@ jobs:
       - test-no-remote-admin-access
       - test-autotune
       - test-single-node
-      - test-xenial
+      - test-trusty
     - get: version
       trigger: true
       passed:
@@ -1009,7 +1013,7 @@ jobs:
       - test-no-remote-admin-access
       - test-autotune
       - test-single-node
-      - test-xenial
+      - test-trusty
     - put: pxc-release-release-candidate
       params:
         repository: pxc-release
