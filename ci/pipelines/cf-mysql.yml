@@ -164,6 +164,15 @@ resources:
 - name: cf-mysql-release
   type: git
   source:
+    uri: https://github.com/cloudfoundry/cf-mysql-release.git
+    branch: develop
+    ignore_paths:
+    - .final_builds/*/**
+    - releases/*/**
+
+- name: cf-mysql-release-develop-committer
+  type: git
+  source:
     uri: git@github.com:cloudfoundry/cf-mysql-release.git
     branch: develop
     private_key: ((core-services-ci-credentials/Notes/git-writer-private-key))
@@ -316,7 +325,7 @@ jobs:
       BLOBS_BUCKET_NAME: mysql-service-blobs
       AWS_ACCESS_KEY_ID: ((core-services-ci-credentials/Notes/cf-mysql-publish-blobs-aws-access-key-id))
       AWS_SECRET_ACCESS_KEY: ((core-services-ci-credentials/Notes/cf-mysql-publish-blobs-aws-secret-access-key))
-  - put: cf-mysql-release
+  - put: cf-mysql-release-develop-committer
     params:
       repository: cf-mysql-release-changed
 
@@ -1433,7 +1442,7 @@ jobs:
   plan:
   - get: cf-mysql-master
     trigger: true
-  - put: cf-mysql-release
+  - put: cf-mysql-release-develop-committer
     params:
       repository: cf-mysql-master
       merge: true
