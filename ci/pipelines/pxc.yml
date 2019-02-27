@@ -429,7 +429,7 @@ jobs:
     - get: version
       passed: [create-and-compile-release]
       trigger: true
-    - get: pxc-compiled-release
+    - get: pxc-xenial-compiled-release
       passed: [create-and-compile-release]
     - get: bpm-release
   - task: check-last-pxc-release-version
@@ -461,6 +461,7 @@ jobs:
       manifest: last-pxc-release-source/pxc-deployment.yml
       ops_files:
       - last-pxc-release-source/operations/use-clustered.yml
+      - last-pxc-release-source/operations/xenial-stemcell.yml
       - cf-mysql-ci/operations/pxc/add-proxy-load-balancer.yml
       - cf-mysql-ci/operations/pxc/enable-remote-admin-access.yml
       releases:
@@ -518,7 +519,7 @@ jobs:
     - get: cf-acceptance-tests
     - get: cf-mysql-deployment
     - get: compiled-release-tarball
-      resource: pxc-compiled-release
+      resource: pxc-xenial-compiled-release
       passed: [create-and-compile-release]
     - get: bpm-release
   - do: *create-bosh-lite
@@ -576,7 +577,7 @@ jobs:
         - get: cf-acceptance-tests
         - get: cf-mysql-deployment
         - get: compiled-release-tarball
-          resource: pxc-compiled-release
+          resource: pxc-xenial-compiled-release
           passed: [create-and-compile-release]
         - get: bpm-release
     - do: *create-bosh-lite
@@ -623,7 +624,7 @@ jobs:
         - get: cf-acceptance-tests
         - get: cf-mysql-deployment
         - get: compiled-release-tarball
-          resource: pxc-compiled-release
+          resource: pxc-xenial-compiled-release
           passed: [create-and-compile-release]
         - get: bpm-release
     - do: *create-bosh-lite
@@ -678,7 +679,7 @@ jobs:
     - get: cf-acceptance-tests
     - get: cf-mysql-deployment
     - get: compiled-release-tarball
-      resource: pxc-compiled-release
+      resource: pxc-xenial-compiled-release
       passed: [create-and-compile-release]
     - get: bpm-release
   - do: *create-bosh-lite
@@ -735,7 +736,7 @@ jobs:
     - get: cf-acceptance-tests
     - get: cf-mysql-deployment
     - get: compiled-release-tarball
-      resource: pxc-compiled-release
+      resource: pxc-xenial-compiled-release
       passed: [create-and-compile-release]
     - get: bpm-release
   - do: *create-bosh-lite
@@ -781,7 +782,7 @@ jobs:
         - get: cf-acceptance-tests
         - get: cf-mysql-deployment
         - get: compiled-release-tarball
-          resource: pxc-compiled-release
+          resource: pxc-xenial-compiled-release
           passed: [create-and-compile-release]
         - get: bpm-release
     - do: *create-bosh-lite
@@ -836,7 +837,7 @@ jobs:
         - get: cf-acceptance-tests
         - get: cf-mysql-deployment
         - get: compiled-release-tarball
-          resource: pxc-compiled-release
+          resource: pxc-xenial-compiled-release
           passed: [create-and-compile-release]
         - get: bpm-release
     - do: *create-bosh-lite
@@ -891,7 +892,7 @@ jobs:
     - get: cf-acceptance-tests
     - get: cf-mysql-deployment
     - get: compiled-release-tarball
-      resource: pxc-compiled-release
+      resource: pxc-xenial-compiled-release
       passed: [create-and-compile-release]
     - get: bpm-release
   - do: *create-bosh-lite
