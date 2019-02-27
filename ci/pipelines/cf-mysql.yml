@@ -399,6 +399,7 @@ jobs:
       BOSH_CA_CERT: ((concourse-compilation-director/Notes/BOSH_CA_CERT))
       BOSH_ALL_PROXY: ((concourse-compilation-director/Notes/BOSH_ALL_PROXY))
       BOSH_JUMPBOX_PRIVATE_KEY: ((concourse-compilation-director/Notes/BOSH_JUMPBOX_PRIVATE_KEY))
+      STEMCELL_LINE: ubuntu-trusty
     ensure:
       put: compiled-packages-lock
       params:
