@@ -67,10 +67,10 @@ RUN \
 RUN ln -s /usr/bin/nodejs /usr/bin/node
 
 RUN \
-    apt-get install software-properties-common \
+    apt-get -y install software-properties-common \
     && apt-add-repository ppa:brightbox/ruby-ng \
     && apt-get update \
-    && apt-get install ruby2.3
+    && apt-get -y install ruby2.3
 
 # Install bosh cli
 RUN \
