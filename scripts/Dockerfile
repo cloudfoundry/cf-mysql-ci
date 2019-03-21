@@ -70,7 +70,7 @@ RUN \
     apt-get -y install software-properties-common \
     && apt-add-repository ppa:brightbox/ruby-ng \
     && apt-get update \
-    && apt-get -y install ruby2.3
+    && apt-get -y install ruby2.3 ruby2.3-dev zlib1g-dev
 
 # Install bosh cli
 RUN \
