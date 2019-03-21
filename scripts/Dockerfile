@@ -66,18 +66,11 @@ RUN \
 # Alias nodejs as node for switchboard ui
 RUN ln -s /usr/bin/nodejs /usr/bin/node
 
-# Install ruby-install
-RUN curl https://codeload.github.com/postmodern/ruby-install/tar.gz/v0.5.0 | tar xvz -C /tmp/ && \
-          cd /tmp/ruby-install-0.5.0 && \
-          make install
-
-ENV DOCKER_RUBY_VERSION 2.3.5
-
-# Install Ruby
-RUN ruby-install ruby ${DOCKER_RUBY_VERSION} -- --disable-install-rdoc
-
-# Add ruby to PATH
-ENV PATH $PATH:/home/root/.gem/ruby/${DOCKER_RUBY_VERSION}/bin:/opt/rubies/ruby-${DOCKER_RUBY_VERSION}/lib/ruby/gems/${DOCKER_RUBY_VERSION}/bin:/opt/rubies/ruby-${DOCKER_RUBY_VERSION}/bin
+RUN \
+    apt-get install software-properties-common \
+    && apt-add-repository ppa:brightbox/ruby-ng \
+    && apt-get update \
+    && apt-get install ruby2.3
 
 # Install bosh cli
 RUN \
