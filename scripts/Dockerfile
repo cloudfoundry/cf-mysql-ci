@@ -108,9 +108,9 @@ RUN wget https://bootstrap.pypa.io/get-pip.py -O /tmp/get-pip.py && \
 
 # Install consul
 RUN \
-  wget -q https://releases.hashicorp.com/consul/0.5.2/consul_0.5.2_linux_amd64.zip -P /tmp/ && \
-  unzip /tmp/consul_0.5.2_linux_amd64.zip -d /usr/local/bin && \
-  rm /tmp/consul_0.5.2_linux_amd64.zip
+  wget -q https://releases.hashicorp.com/consul/0.7.4/consul_0.7.4_linux_amd64.zip -P /tmp/ && \
+  unzip /tmp/consul_0.7.4_linux_amd64.zip -d /usr/local/bin && \
+  rm /tmp/consul_0.7.4_linux_amd64.zip
 
 # Install gems
 RUN gem install bundler -v 1.17.3 --no-rdoc --no-ri
