@@ -1,0 +1,785 @@
+---
+resource_types:
+- name: bosh-deployment
+  type: docker-image
+  source:
+    repository: cloudfoundry/bosh-deployment-resource
+
+resources:
+- name: bosh-lite-stemcell
+  type: bosh-io-stemcell
+  source:
+    name: bosh-warden-boshlite-ubuntu-trusty-go_agent
+
+- name: gcp-bosh-stemcell
+  type: bosh-io-stemcell
+  source:
+    name: bosh-google-kvm-ubuntu-trusty-go_agent
+
+- name: xenial-bosh-lite-stemcell
+  type: bosh-io-stemcell
+  source:
+    name: bosh-warden-boshlite-ubuntu-xenial-go_agent
+
+- name: xenial-gcp-bosh-stemcell
+  type: bosh-io-stemcell
+  source:
+    name: bosh-google-kvm-ubuntu-xenial-go_agent
+
+- name: deployments-configuration
+  type: git
+  source:
+    uri: git@github.com:pivotal-cf/deployments-core-services
+    private_key: ((core-services-ci-credentials/Notes/pcf-mysql-engine-reader-private-key))
+
+- name: cf-mysql-ci
+  type: git
+  source:
+    uri: https://github.com/cloudfoundry-incubator/cf-mysql-ci.git
+    branch: master
+
+- name: cf-deployment-concourse-tasks
+  type: git
+  source:
+    uri: https://github.com/cloudfoundry/cf-deployment-concourse-tasks.git
+    tag_filter: v3.*
+
+- name: cf-acceptance-tests
+  type: git
+  source:
+    uri: https://github.com/cloudfoundry/cf-acceptance-tests.git
+    branch: master
+
+- name: pxc-release
+  type: git
+  source:
+    uri: git@github.com:pivotal/lts-pxc-release.git
+    branch: v0.14.x
+    private_key: ((core-services-ci-credentials/Notes/git-writer-private-key))
+
+- name: pxc-release-release-candidate
+  type: git
+  source:
+    uri: git@github.com:pivotal/lts-pxc-release.git
+    branch: release-candidate
+    private_key: ((core-services-ci-credentials/Notes/git-writer-private-key))
+
+- name: bpm-release
+  type: bosh-io-release
+  source:
+    repository: cloudfoundry-incubator/bpm-release
+
+- name: cf-deployment-release-candidate
+  type: git
+  source:
+    uri: https://github.com/cloudfoundry/cf-deployment.git
+    branch: release-candidate
+
+- name: cf-mysql-deployment
+  type: git
+  source:
+    uri: https://github.com/cloudfoundry/cf-mysql-deployment.git
+    branch: develop
+
+- name: compiled-packages-lock
+  type: pool
+  source:
+    uri: git@github.com:pivotal-cf-experimental/core-services-oss-env-resource-pool
+    branch: master
+    pool: compiled-packages
+    private_key: ((core-services-ci-credentials/Notes/pcf-mysql-engine-writer-private-key))
+
+- name: pxc-bosh-deployment
+  type: bosh-deployment
+  source:
+    deployment: pxc
+
+- name: bosh-deployment-repo
+  type: git
+  source:
+    uri: https://github.com/cloudfoundry/bosh-deployment
+
+- name: version
+  type: semver
+  source:
+    driver: s3
+    bucket: lts-pxc-release
+    access_key_id: ((core-services-ci-credentials/Notes/lts-pxc-release-writer-access-key))
+    secret_access_key: ((core-services-ci-credentials/Notes/lts-pxc-release-writer-secret-access-key))
+    key: lts-version
+    initial_version: 0.14.2
+
+- name: pxc-xenial-compiled-release
+  type: s3
+  source:
+    bucket: pxc-releases
+    access_key_id: ((core-services-ci-credentials/Notes/cf-mysql-ci-aws-access-key-id))
+    secret_access_key: ((core-services-ci-credentials/Notes/cf-mysql-ci-aws-secret-access-key))
+    versioned_file: compiled-releases/lts-pxc-ubuntu-xenial.tgz
+
+- name: publish-github-release
+  type: github-release
+  source:
+    user: pivotal
+    repository: lts-pxc-release
+    access_token: ((core-services-ci-credentials/Notes/git-writer-github-access-token))
+
+- name: release-notes
+  type: s3
+  source:
+    bucket: lts-pxc-release
+    regexp: RELEASE_NOTES_(.*)
+    access_key_id: ((core-services-ci-credentials/Notes/lts-pxc-release-writer-access-key))
+    secret_access_key: ((core-services-ci-credentials/Notes/lts-pxc-release-writer-secret-access-key))
+
+jobs:
+- name: bump-version
+  serial_groups: [version-bumper]
+  plan:
+  - aggregate:
+    - get: gcp-bosh-stemcell
+      trigger: true
+    - get: xenial-gcp-bosh-stemcell
+      trigger: true
+    - get: xenial-bosh-lite-stemcell
+      trigger: true
+    - get: bosh-lite-stemcell
+      trigger: true
+    - get: pxc-release
+      trigger: true
+    - get: cf-deployment-release-candidate
+      trigger: true
+    - get: version
+    - get: cf-mysql-ci
+  - task: gate-on-xenial-stemcells
+    file: cf-mysql-ci/ci/tasks/gate-on-stemcells/task.yml
+    input_mapping:
+      gcp-bosh-stemcell: xenial-gcp-bosh-stemcell
+      bosh-lite-stemcell: xenial-bosh-lite-stemcell
+  - put: version
+    params:
+      pre: rc
+
+- name: test-unit-and-integration
+  serial: true
+  plan:
+  - aggregate:
+    - get: cf-mysql-ci
+    - get: pxc-release
+      trigger: true
+      passed: [bump-version]
+    - get: version
+      trigger: true
+      passed: [bump-version]
+  - aggregate:
+    - task: test-unit
+      file: cf-mysql-ci/ci/tasks/test-unit/task.yml
+      input_mapping:
+        mysql-release: pxc-release
+    - task: test-integration
+      file: cf-mysql-ci/ci/tasks/run-galera-init-integration/task.yml
+      privileged: true
+
+- name: create-and-compile-release
+  plan:
+  - aggregate:
+    - get: pxc-release
+      passed: [bump-version, test-unit-and-integration]
+    - get: cf-deployment-rc
+      resource: cf-deployment-release-candidate
+    - get: gcp-bosh-stemcell
+      passed: [bump-version]
+    - get: bosh-lite-stemcell
+      passed: [bump-version]
+    - get: xenial-gcp-bosh-stemcell
+      passed: [bump-version]
+    - get: xenial-bosh-lite-stemcell
+      passed: [bump-version]
+    - get: version
+      passed: [bump-version, test-unit-and-integration]
+      trigger: true
+    - get: cf-mysql-ci
+  - task: create-release
+    attempts: 3
+    file: cf-mysql-ci/ci/tasks/create-release/task.yml
+    input_mapping: {release-repo: pxc-release}
+    params:
+      RELEASE_NAME: pxc
+      BOSH_SHA2: true
+  - put: compiled-packages-lock
+    params:
+      acquire: true
+  - task: xenial-compile-release #compile pxc release on xenial
+    file: cf-mysql-ci/ci/tasks/compile-release/task.yml
+    input_mapping:
+      gcp-bosh-stemcell: xenial-gcp-bosh-stemcell
+    output_mapping:
+      compiled-release-tarball: xenial-compiled-release-tarball
+    params:
+      BOSH_CLIENT: ((concourse-compilation-director/Notes/BOSH_CLIENT))
+      BOSH_CLIENT_SECRET: ((concourse-compilation-director/Notes/BOSH_CLIENT_SECRET))
+      BOSH_ENVIRONMENT: ((concourse-compilation-director/Notes/BOSH_ENVIRONMENT))
+      BOSH_CA_CERT: ((concourse-compilation-director/Notes/BOSH_CA_CERT))
+      BOSH_ALL_PROXY: ((concourse-compilation-director/Notes/BOSH_ALL_PROXY))
+      BOSH_JUMPBOX_PRIVATE_KEY: ((concourse-compilation-director/Notes/BOSH_JUMPBOX_PRIVATE_KEY))
+      STEMCELL_LINE: ubuntu-xenial
+  - put: pxc-xenial-compiled-release
+    params:
+      file: xenial-compiled-release-tarball/*.tgz
+
+- name: test-clean-install-pxc
+  plan:
+  - aggregate:
+    - get: pxc-release
+      passed: [create-and-compile-release]
+    - get: cf-mysql-ci
+    - get: bosh-deployment
+      resource: bosh-deployment-repo
+    - get: deployments
+      resource: deployments-configuration
+    - get: stemcell
+      resource: xenial-bosh-lite-stemcell
+      passed: [create-and-compile-release]
+    - get: version
+      passed: [create-and-compile-release]
+      trigger: true
+    - get: cf-deployment
+      resource: cf-deployment-release-candidate
+    - get: cf-deployment-concourse-tasks
+    - get: cf-acceptance-tests
+    - get: cf-mysql-deployment
+  - do: &create-bosh-lite
+    - task: apply-terraform
+      file: cf-mysql-ci/ci/tasks/apply-bosh-lite-terraform/task.yml
+    - task: create-bosh-lite
+      file: cf-mysql-ci/ci/tasks/create-bosh-lite/task.yml
+      input_mapping: {deployments: deployments-terraformed}
+      params:
+        PROJECT_ID: ((core-services-ci-credentials/Notes/gcp-bosh-lite-project-id))
+        ZONE: ((core-services-ci-credentials/Notes/gcp-bosh-lite-zone))
+        NETWORK: ((core-services-ci-credentials/Notes/gcp-bosh-lite-network))
+        SUBNETWORK: ((core-services-ci-credentials/Notes/gcp-bosh-lite-subnetwork))
+        BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
+    - aggregate:
+      - task: create-dns
+        file: cf-mysql-ci/ci/tasks/create-dns/task.yml
+        attempts: 5
+      - task: delete-stemcell
+        file: cf-mysql-ci/ci/tasks/delete-stemcell/task.yml
+      - do:
+        - task: generate-cloud-config
+          file: cf-mysql-ci/ci/tasks/generate-cloud-config/task.yml
+        - task: update-cloud-config
+          file: cf-mysql-ci/ci/tasks/update-cloud-config/task.yml
+          params:
+            BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
+            BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
+            ENV_TARGET_FILE: bosh-lite-info/director-url
+            BOSH_CA_CERT_PATH: bosh-lite-info/ca-cert
+            CLOUD_CONFIG: cloud-config/cloud-config.yml
+  - task: test-galera-encryption
+    file: cf-mysql-ci/ci/tasks/test-galera-encryption/task.yml
+  - task: run-cats
+    file: cf-mysql-ci/ci/tasks/run-cats/task.yml
+    attempts: 3
+  - do: &teardown-bosh-lite
+    - task: destroy-bosh-lite
+      file: cf-mysql-ci/ci/tasks/destroy-bosh-lite/task.yml
+      input_mapping: {bosh-lite-info: bosh-lite-info-stemcell-deleted}
+    - task: destroy-terraform
+      file: cf-mysql-ci/ci/tasks/destroy-bosh-lite-terraform/task.yml
+      input_mapping: {deployments: deployments-terraformed}
+    - task: delete-dns
+      file: cf-mysql-ci/ci/tasks/delete-dns/task.yml
+      attempts: 5
+
+- name: test-audit-logging
+  plan:
+  - aggregate:
+    - get: pxc-release
+      passed: [create-and-compile-release]
+    - get: cf-mysql-ci
+    - get: bosh-deployment
+      resource: bosh-deployment-repo
+    - get: deployments
+      resource: deployments-configuration
+    - get: stemcell
+      resource: xenial-bosh-lite-stemcell
+      passed: [create-and-compile-release]
+    - get: version
+      passed: [create-and-compile-release]
+      trigger: true
+    - get: cf-deployment
+      resource: cf-deployment-release-candidate
+    - get: cf-deployment-concourse-tasks
+    - get: cf-acceptance-tests
+    - get: cf-mysql-deployment
+    - get: compiled-release-tarball
+      resource: pxc-xenial-compiled-release
+      passed: [create-and-compile-release]
+    - get: bpm-release
+  - do: *create-bosh-lite
+  - put: pxc-bosh-deployment
+    params:
+      manifest: pxc-release/pxc-deployment.yml
+      releases:
+      - compiled-release-tarball/*.tgz
+      - bpm-release/*.tgz
+      stemcells:
+      - stemcell/*.tgz
+      source_file: bosh-lite-info/bosh-deployment-resource-source-file
+      ops_files:
+      - pxc-release/operations/use-clustered.yml
+      - cf-mysql-ci/operations/pxc/add-proxy-load-balancer.yml
+      - cf-mysql-ci/operations/pxc/allow-http-proxy-access.yml
+      - cf-mysql-ci/operations/pxc/enable-remote-admin-access.yml
+      - cf-mysql-ci/operations/pxc/test-audit-logging.yml
+  - task: smoke-tests
+    file: cf-mysql-ci/ci/tasks/run-errand/task.yml
+    params:
+      ERRAND: smoke-tests
+      BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
+      BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
+      BOSH_DEPLOYMENT: pxc
+      INSTANCE: mysql/0
+  - task: test-audit-logging
+    file: cf-mysql-ci/ci/tasks/test-integration-suites/task.yml
+    params:
+      AUDIT_LOG_PATH: /var/vcap/store/mysql_audit_logs/mysql_server_audit.log
+      BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
+      BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
+      TEST_SUITE_NAME: "audit_logging"
+  - do: *teardown-bosh-lite
+
+- name: test-autotune
+  plan:
+    - aggregate:
+        - get: pxc-release
+          passed: [create-and-compile-release]
+        - get: cf-mysql-ci
+        - get: bosh-deployment
+          resource: bosh-deployment-repo
+        - get: deployments
+          resource: deployments-configuration
+        - get: stemcell
+          resource: xenial-bosh-lite-stemcell
+          passed: [create-and-compile-release]
+        - get: version
+          passed: [create-and-compile-release]
+          trigger: true
+        - get: cf-deployment
+          resource: cf-deployment-release-candidate
+        - get: cf-deployment-concourse-tasks
+        - get: cf-acceptance-tests
+        - get: cf-mysql-deployment
+        - get: compiled-release-tarball
+          resource: pxc-xenial-compiled-release
+          passed: [create-and-compile-release]
+        - get: bpm-release
+    - do: *create-bosh-lite
+    - put: pxc-bosh-deployment
+      params:
+        manifest: pxc-release/pxc-deployment.yml
+        releases:
+          - compiled-release-tarball/*.tgz
+          - bpm-release/*.tgz
+        stemcells:
+          - stemcell/*.tgz
+        source_file: bosh-lite-info/bosh-deployment-resource-source-file
+        ops_files:
+          - pxc-release/operations/use-clustered.yml
+          - cf-mysql-ci/operations/pxc/add-proxy-load-balancer.yml
+          - cf-mysql-ci/operations/pxc/enable-remote-admin-access.yml
+    - task: test-autotune
+      file: cf-mysql-ci/ci/tasks/test-integration-suites/task.yml
+      params:
+        BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
+        BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
+        TEST_SUITE_NAME: "autotune"
+    - do: *teardown-bosh-lite
+
+- name: test-bootstrap
+  plan:
+    - aggregate:
+        - get: pxc-release
+          passed: [create-and-compile-release]
+        - get: cf-mysql-ci
+        - get: bosh-deployment
+          resource: bosh-deployment-repo
+        - get: deployments
+          resource: deployments-configuration
+        - get: stemcell
+          resource: xenial-bosh-lite-stemcell
+          passed: [create-and-compile-release]
+        - get: version
+          passed: [create-and-compile-release]
+          trigger: true
+        - get: cf-deployment
+          resource: cf-deployment-release-candidate
+        - get: cf-deployment-concourse-tasks
+        - get: cf-acceptance-tests
+        - get: cf-mysql-deployment
+        - get: compiled-release-tarball
+          resource: pxc-xenial-compiled-release
+          passed: [create-and-compile-release]
+        - get: bpm-release
+    - do: *create-bosh-lite
+    - put: pxc-bosh-deployment
+      params:
+        manifest: pxc-release/pxc-deployment.yml
+        releases:
+          - compiled-release-tarball/*.tgz
+          - bpm-release/*.tgz
+        stemcells:
+          - stemcell/*.tgz
+        source_file: bosh-lite-info/bosh-deployment-resource-source-file
+        ops_files:
+          - pxc-release/operations/use-clustered.yml
+          - cf-mysql-ci/operations/pxc/add-proxy-load-balancer.yml
+          - cf-mysql-ci/operations/pxc/enable-remote-admin-access.yml
+    - task: smoke-tests
+      file: cf-mysql-ci/ci/tasks/run-errand/task.yml
+      params:
+        ERRAND: smoke-tests
+        BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
+        BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
+        BOSH_DEPLOYMENT: pxc
+        INSTANCE: mysql/0
+    - task: test-bootstrap
+      file: cf-mysql-ci/ci/tasks/test-integration-suites/task.yml
+      params:
+        BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
+        BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
+        TEST_SUITE_NAME: "bootstrap"
+    - do: *teardown-bosh-lite
+
+- name: test-failover
+  plan:
+  - aggregate:
+    - get: pxc-release
+      passed: [create-and-compile-release]
+    - get: cf-mysql-ci
+    - get: bosh-deployment
+      resource: bosh-deployment-repo
+    - get: deployments
+      resource: deployments-configuration
+    - get: stemcell
+      resource: xenial-bosh-lite-stemcell
+      passed: [create-and-compile-release]
+    - get: version
+      passed: [create-and-compile-release]
+      trigger: true
+    - get: cf-deployment
+      resource: cf-deployment-release-candidate
+    - get: cf-deployment-concourse-tasks
+    - get: cf-acceptance-tests
+    - get: cf-mysql-deployment
+    - get: compiled-release-tarball
+      resource: pxc-xenial-compiled-release
+      passed: [create-and-compile-release]
+    - get: bpm-release
+  - do: *create-bosh-lite
+  - put: pxc-bosh-deployment
+    params:
+      manifest: pxc-release/pxc-deployment.yml
+      releases:
+      - compiled-release-tarball/*.tgz
+      - bpm-release/*.tgz
+      stemcells:
+      - stemcell/*.tgz
+      source_file: bosh-lite-info/bosh-deployment-resource-source-file
+      ops_files:
+      - pxc-release/operations/use-clustered.yml
+      - cf-mysql-ci/operations/pxc/add-proxy-load-balancer.yml
+      - cf-mysql-ci/operations/pxc/allow-http-proxy-access.yml
+      - cf-mysql-ci/operations/pxc/enable-remote-admin-access.yml
+  - task: smoke-tests
+    file: cf-mysql-ci/ci/tasks/run-errand/task.yml
+    params:
+      ERRAND: smoke-tests
+      BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
+      BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
+      BOSH_DEPLOYMENT: pxc
+      INSTANCE: mysql/0
+  - task: test-failover
+    file: cf-mysql-ci/ci/tasks/test-integration-suites/task.yml
+    params:
+      BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
+      BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
+      BOSH_DEPLOYMENT: pxc
+      TEST_SUITE_NAME: "failover"
+  - do: *teardown-bosh-lite
+
+- name: test-no-remote-admin-access
+  plan:
+  - aggregate:
+    - get: pxc-release
+      passed: [create-and-compile-release]
+    - get: cf-mysql-ci
+    - get: bosh-deployment
+      resource: bosh-deployment-repo
+    - get: deployments
+      resource: deployments-configuration
+    - get: stemcell
+      resource: xenial-bosh-lite-stemcell
+      passed: [create-and-compile-release]
+    - get: version
+      passed: [create-and-compile-release]
+      trigger: true
+    - get: cf-deployment
+      resource: cf-deployment-release-candidate
+    - get: cf-deployment-concourse-tasks
+    - get: cf-acceptance-tests
+    - get: cf-mysql-deployment
+    - get: compiled-release-tarball
+      resource: pxc-xenial-compiled-release
+      passed: [create-and-compile-release]
+    - get: bpm-release
+  - do: *create-bosh-lite
+  - put: pxc-bosh-deployment
+    params:
+      manifest: pxc-release/pxc-deployment.yml
+      releases:
+      - compiled-release-tarball/*.tgz
+      - bpm-release/*.tgz
+      stemcells:
+      - stemcell/*.tgz
+      source_file: bosh-lite-info/bosh-deployment-resource-source-file
+      ops_files:
+      - pxc-release/operations/use-clustered.yml
+      - cf-mysql-ci/operations/pxc/add-proxy-load-balancer.yml
+  - task: test-no-remote-admin-access
+    file: cf-mysql-ci/ci/tasks/test-integration-suites/task.yml
+    params:
+      BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
+      BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
+      TEST_SUITE_NAME: "no_remote_access"
+  - do: *teardown-bosh-lite
+
+- name: test-scaling
+  plan:
+    - aggregate:
+        - get: pxc-release
+          passed: [create-and-compile-release]
+        - get: cf-mysql-ci
+        - get: bosh-deployment
+          resource: bosh-deployment-repo
+        - get: deployments
+          resource: deployments-configuration
+        - get: stemcell
+          resource: xenial-bosh-lite-stemcell
+          passed: [create-and-compile-release]
+        - get: version
+          passed: [create-and-compile-release]
+          trigger: true
+        - get: cf-deployment
+          resource: cf-deployment-release-candidate
+        - get: cf-deployment-concourse-tasks
+        - get: cf-acceptance-tests
+        - get: cf-mysql-deployment
+        - get: compiled-release-tarball
+          resource: pxc-xenial-compiled-release
+          passed: [create-and-compile-release]
+        - get: bpm-release
+    - do: *create-bosh-lite
+    - put: pxc-bosh-deployment
+      params:
+        manifest: pxc-release/pxc-deployment.yml
+        releases:
+          - compiled-release-tarball/*.tgz
+          - bpm-release/*.tgz
+        stemcells:
+          - stemcell/*.tgz
+        source_file: bosh-lite-info/bosh-deployment-resource-source-file
+        ops_files:
+          - pxc-release/operations/use-clustered.yml
+          - cf-mysql-ci/operations/pxc/add-proxy-load-balancer.yml
+          - cf-mysql-ci/operations/pxc/enable-remote-admin-access.yml
+    - task: smoke-tests
+      file: cf-mysql-ci/ci/tasks/run-errand/task.yml
+      params:
+        ERRAND: smoke-tests
+        BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
+        BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
+        BOSH_DEPLOYMENT: pxc
+        INSTANCE: mysql/0
+    - task: test-scaling
+      file: cf-mysql-ci/ci/tasks/test-integration-suites/task.yml
+      params:
+        BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
+        BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
+        TEST_SUITE_NAME: "scaling"
+    - do: *teardown-bosh-lite
+
+- name: test-tls
+  plan:
+    - aggregate:
+        - get: pxc-release
+          passed: [create-and-compile-release]
+        - get: cf-mysql-ci
+        - get: bosh-deployment
+          resource: bosh-deployment-repo
+        - get: deployments
+          resource: deployments-configuration
+        - get: stemcell
+          resource: xenial-bosh-lite-stemcell
+          passed: [create-and-compile-release]
+        - get: version
+          passed: [create-and-compile-release]
+          trigger: true
+        - get: cf-deployment
+          resource: cf-deployment-release-candidate
+        - get: cf-deployment-concourse-tasks
+        - get: cf-acceptance-tests
+        - get: cf-mysql-deployment
+        - get: compiled-release-tarball
+          resource: pxc-xenial-compiled-release
+          passed: [create-and-compile-release]
+        - get: bpm-release
+    - do: *create-bosh-lite
+    - put: pxc-bosh-deployment
+      params:
+        manifest: pxc-release/pxc-deployment.yml
+        releases:
+          - compiled-release-tarball/*.tgz
+          - bpm-release/*.tgz
+        stemcells:
+          - stemcell/*.tgz
+        source_file: bosh-lite-info/bosh-deployment-resource-source-file
+        ops_files:
+          - pxc-release/operations/use-clustered.yml
+          - cf-mysql-ci/operations/pxc/add-proxy-load-balancer.yml
+          - cf-mysql-ci/operations/pxc/enable-remote-admin-access.yml
+    - task: smoke-tests
+      file: cf-mysql-ci/ci/tasks/run-errand/task.yml
+      params:
+        ERRAND: smoke-tests
+        BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
+        BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
+        BOSH_DEPLOYMENT: pxc
+        INSTANCE: mysql/0
+    - task: test-tls
+      file: cf-mysql-ci/ci/tasks/test-integration-suites/task.yml
+      params:
+        BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
+        BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
+        TEST_SUITE_NAME: "tls"
+    - do: *teardown-bosh-lite
+
+- name: test-single-node
+  plan:
+  - aggregate:
+    - get: pxc-release
+      passed: [create-and-compile-release]
+    - get: cf-mysql-ci
+    - get: bosh-deployment
+      resource: bosh-deployment-repo
+    - get: deployments
+      resource: deployments-configuration
+    - get: stemcell
+      resource: xenial-bosh-lite-stemcell
+      passed: [create-and-compile-release]
+    - get: version
+      passed: [create-and-compile-release]
+      trigger: true
+    - get: cf-deployment
+      resource: cf-deployment-release-candidate
+    - get: cf-deployment-concourse-tasks
+    - get: cf-acceptance-tests
+    - get: cf-mysql-deployment
+    - get: compiled-release-tarball
+      resource: pxc-xenial-compiled-release
+      passed: [create-and-compile-release]
+    - get: bpm-release
+  - do: *create-bosh-lite
+  - put: pxc-bosh-deployment
+    params:
+      manifest: pxc-release/pxc-deployment.yml
+      releases:
+      - bpm-release/*.tgz
+      - compiled-release-tarball/*.tgz
+      stemcells:
+      - stemcell/*.tgz
+      source_file: bosh-lite-info/bosh-deployment-resource-source-file
+  - task: smoke-tests
+    file: cf-mysql-ci/ci/tasks/run-errand/task.yml
+    params:
+      ERRAND: smoke-tests
+      BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
+      BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
+      BOSH_DEPLOYMENT: pxc
+      INSTANCE: mysql/0
+  - do: *teardown-bosh-lite
+
+- name: promote-release-candidate
+  plan:
+  - do:
+    - get: pxc-release
+      passed:
+      - test-clean-install-pxc
+      - test-failover
+      - test-scaling
+      - test-bootstrap
+      - test-no-remote-admin-access
+      - test-autotune
+      - test-single-node
+    - get: version
+      trigger: true
+      passed:
+      - test-clean-install-pxc
+      - test-failover
+      - test-scaling
+      - test-bootstrap
+      - test-no-remote-admin-access
+      - test-autotune
+      - test-single-node
+    - put: pxc-release-release-candidate
+      params:
+        repository: pxc-release
+
+- name: final-release
+  serial_groups: [version-bumper]
+  plan:
+    - aggregate:
+      - get: pxc-release
+        passed: [promote-release-candidate]
+      - get: cf-mysql-ci
+      - get: release-notes
+      - get: version
+        passed: [promote-release-candidate]
+        params:
+          bump: final
+    - task: create-release
+      file: cf-mysql-ci/ci/tasks/create-release/task.yml
+      input_mapping: {release-repo: pxc-release}
+      output_mapping: {release-repo-modified: pxc-release-final}
+      params:
+        RELEASE_NAME: pxc
+        BLOBS_BUCKET_NAME: ((pxc-release-private.yml/Notes/bucket_name))
+        FINAL: true
+        BOSH_SHA2: true
+        AWS_ACCESS_KEY_ID: ((pxc-release-private.yml/Notes/access_key_id))
+        AWS_SECRET_ACCESS_KEY: ((pxc-release-private.yml/Notes/secret_access_key))
+    - task: commit-final-release-changes
+      file: cf-mysql-ci/ci/tasks/commit-github-release-changes/task.yml
+      input_mapping: {github-release: pxc-release-final}
+      output_mapping: {github-release-committed: pxc-release-committed}
+      params:
+        GIT_COMMIT_MESSAGE: commit-message/commit-message
+    - task: prep-github-release
+      file: cf-mysql-ci/ci/tasks/prep-github-release/task.yml
+      input_mapping: {github-release-committed: pxc-release-committed}
+    - put: pxc-release
+      params:
+        repository: pxc-release-committed
+        tag: output-release-dir/release-tag
+    - put: version
+      params:
+        bump: patch
+        pre: rc
+    - put: publish-github-release
+      params:
+        name: output-release-dir/release-tag
+        tag: output-release-dir/release-tag
+        body: output-release-dir/generated-release-notes
+        commitish: output-release-dir/git-commit
