@@ -815,6 +815,7 @@ jobs:
         BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
         BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
         TEST_SUITE_NAME: "bosh_wait_scripts"
+        BOSH_DEPLOYMENT: pxc
     - do: *teardown-bosh-lite
 
 - name: test-scaling
