@@ -762,6 +762,61 @@ jobs:
       TEST_SUITE_NAME: "no_remote_access"
   - do: *teardown-bosh-lite
 
+- name: test-bosh-wait-scripts
+  plan:
+    - aggregate:
+        - get: pxc-release
+          passed: [create-and-compile-release]
+        - get: cf-mysql-ci
+        - get: bosh-deployment
+          resource: bosh-deployment-repo
+        - get: deployments
+          resource: deployments-configuration
+        - get: stemcell
+          resource: xenial-bosh-lite-stemcell
+          passed: [create-and-compile-release]
+        - get: version
+          passed: [create-and-compile-release]
+          trigger: true
+        - get: cf-deployment
+          resource: cf-deployment-release-candidate
+        - get: cf-deployment-concourse-tasks
+        - get: cf-acceptance-tests
+        - get: cf-mysql-deployment
+        - get: compiled-release-tarball
+          resource: pxc-xenial-compiled-release
+          passed: [create-and-compile-release]
+        - get: bpm-release
+    - do: *create-bosh-lite
+    - put: pxc-bosh-deployment
+      params:
+        manifest: pxc-release/pxc-deployment.yml
+        releases:
+          - compiled-release-tarball/*.tgz
+          - bpm-release/*.tgz
+        stemcells:
+          - stemcell/*.tgz
+        source_file: bosh-lite-info/bosh-deployment-resource-source-file
+        ops_files:
+          - pxc-release/operations/use-clustered.yml
+          - cf-mysql-ci/operations/pxc/add-proxy-load-balancer.yml
+          - cf-mysql-ci/operations/pxc/enable-remote-admin-access.yml
+    - task: smoke-tests
+      file: cf-mysql-ci/ci/tasks/run-errand/task.yml
+      params:
+        ERRAND: smoke-tests
+        BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
+        BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
+        BOSH_DEPLOYMENT: pxc
+        INSTANCE: mysql/0
+    - task: test-scaling
+      file: cf-mysql-ci/ci/tasks/test-integration-suites/task.yml
+      params:
+        BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
+        BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
+        TEST_SUITE_NAME: "bosh_wait_scripts"
+    - do: *teardown-bosh-lite
+
 - name: test-scaling
   plan:
     - aggregate:
