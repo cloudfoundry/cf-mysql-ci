@@ -11,5 +11,5 @@ inputs:
   - name: cf-mysql-ci
 
 run:
-  path: cf-mysql-ci/ci/tasks/run-galera-init-integration/task.sh
+  path: cf-mysql-ci/ci/tasks/run-galera-init-integration-lts/task.sh
 
