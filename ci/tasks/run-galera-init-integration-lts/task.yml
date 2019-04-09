@@ -1,0 +1,15 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: dedicatedmysql/dedicated-mysql-docker-ci
+
+inputs:
+  - name: pxc-release
+  - name: cf-mysql-ci
+
+run:
+  path: cf-mysql-ci/ci/tasks/run-galera-init-integration/task.sh
+
