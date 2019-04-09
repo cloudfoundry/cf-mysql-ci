@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-trap "killall --signal KILL mysqld; service docker stop" EXIT
+trap "pkill -9 mysqld; service docker stop" EXIT
 
 service docker start
 
