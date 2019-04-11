@@ -97,6 +97,10 @@ RUN curl https://dl.google.com/go/go1.11.6.linux-amd64.tar.gz | tar xvz -C /usr/
 ENV GOPATH /usr/local/go
 ENV PATH $PATH:/usr/local/go/bin
 
+# Install ginkgo and gomega
+RUN go get github.com/onsi/ginkgo/ginkgo
+RUN go get github.com/onsi/gomega
+
 # Install spiff
 RUN wget -O /tmp/spiff.zip https://github.com/cloudfoundry-incubator/spiff/releases/download/v1.0.7/spiff_linux_amd64.zip
 RUN unzip /tmp/spiff.zip -d /tmp/ && mv /tmp/spiff $GOPATH/bin/
