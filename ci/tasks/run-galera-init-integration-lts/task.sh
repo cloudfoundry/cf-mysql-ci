@@ -1,16 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-trap "pkill -9 mysqld; service docker stop" EXIT
-
-service docker start
-
-while ! docker info > /dev/null; do
-  sleep 2
-done
-
-echo "Pulling docker image: percona/percona-xtradb-cluster:5.7"
-time docker pull percona/percona-xtradb-cluster:5.7
+trap "pkill -9 mysqld;" EXIT
 
 cat > /tmp/init.sql <<EOF
 CREATE USER 'root'@'127.0.0.1';
@@ -23,12 +14,6 @@ mysqld --character-set-server=utf8 \
        --collation-server=utf8_unicode_ci \
        --daemonize \
        --log-error=/tmp/mysqld.log
-
-if [[ ! -d /sys/fs/cgroup/systemd ]]; then
-    # Fix for issue where container creation fails: https://github.com/moby/moby/issues/36016
-    mkdir /sys/fs/cgroup/systemd
-    mount -t cgroup -o none,name=systemd cgroup /sys/fs/cgroup/systemd
-fi
 
 pushd pxc-release
     source .envrc
