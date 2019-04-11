@@ -94,7 +94,8 @@ RUN \
 RUN curl https://dl.google.com/go/go1.11.6.linux-amd64.tar.gz | tar xvz -C /usr/local/
 
 # Add golang environment variables
-ENV GOPATH /usr/local/go
+RUN mkdir -p $HOME/go
+ENV GOPATH $HOME/go
 ENV PATH $PATH:/usr/local/go/bin
 
 # Install ginkgo and gomega
