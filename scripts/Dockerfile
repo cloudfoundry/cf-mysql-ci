@@ -82,14 +82,6 @@ RUN wget https://github.com/Pyppe/phantomjs2.0-ubuntu14.04x64/raw/master/bin/pha
           chmod +x phantomjs && \
           mv phantomjs /usr/bin/phantomjs
 
-# Install Percona Server 5.7
-RUN \
-  wget https://repo.percona.com/apt/percona-release_latest.generic_all.deb && \
-  dpkg -i percona-release_latest.generic_all.deb && \
-  percona-release setup ps57 release && \
-  apt-get update && \
-  apt-get -y install percona-server-server-5.7
-
 # Install go
 RUN curl https://dl.google.com/go/go1.11.6.linux-amd64.tar.gz | tar xvz -C /usr/local/
 
