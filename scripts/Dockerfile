@@ -86,7 +86,7 @@ RUN wget https://github.com/Pyppe/phantomjs2.0-ubuntu14.04x64/raw/master/bin/pha
 RUN \
   wget https://repo.percona.com/apt/percona-release_latest.generic_all.deb && \
   dpkg -i percona-release_latest.generic_all.deb && \
-  percona-release setup ps57 && \
+  percona-release setup ps57 release && \
   apt-get update && \
   apt-get -y install percona-server-server-5.7
 
