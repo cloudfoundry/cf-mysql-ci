@@ -20,60 +20,6 @@ resource_types:
     repository: cloudfoundry/bosh-deployment-resource
 
 resources:
-- name: cf-mysql-ci-image
-  type: docker-image
-  source:
-    username: ((core-services-ci-credentials/Notes/pivotal-docker-username))
-    email: ((core-services-ci-credentials/Notes/pivotal-docker-email))
-    password: ((core-services-ci-credentials/Notes/pivotal-docker-password))
-    repository: cloudfoundry/cf-mysql-ci
-
-- name: ubuntu-trusty-docker-image
-  type: docker-image
-  source:
-    username: ((core-services-ci-credentials/Notes/pivotal-docker-username))
-    email: ((core-services-ci-credentials/Notes/pivotal-docker-email))
-    password: ((core-services-ci-credentials/Notes/pivotal-docker-password))
-    repository: ubuntu
-    tag: trusty
-
-- name: cf-mysql-dockerfile
-  type: git
-  source:
-    uri: https://github.com/cloudfoundry-incubator/cf-mysql-ci.git
-    branch: master
-    paths:
-    - scripts/Dockerfile
-
-# these inputs require a private key so that we don't get rate limited by github
-- name: bbl-github-release
-  type: github-release
-  source:
-    owner: cloudfoundry
-    repository: bosh-bootloader
-    access_token: ((core-services-ci-credentials/Notes/pcf-core-services-github-api-token))
-
-- name: bosh-cli-github-release
-  type: github-release
-  source:
-    owner: cloudfoundry
-    repository: bosh-cli
-    access_token: ((core-services-ci-credentials/Notes/pcf-core-services-github-api-token))
-
-- name: credhub-cli-github-release
-  type: github-release
-  source:
-    owner: cloudfoundry-incubator
-    repository: credhub-cli
-    access_token: ((core-services-ci-credentials/Notes/pcf-core-services-github-api-token))
-
-- name: terraform-github-release
-  type: github-release
-  source:
-    owner: hashicorp
-    repository: terraform
-    access_token: ((core-services-ci-credentials/Notes/pcf-core-services-github-api-token))
-
 - name: bosh-lite-stemcell
   type: bosh-io-stemcell
   source:
@@ -289,29 +235,6 @@ resources:
 
 ### JOBS
 jobs:
-- name: build-dockerfile
-  plan:
-  - aggregate:
-    - get: ubuntu-trusty-docker-image
-      trigger: true
-    - get: cf-mysql-dockerfile
-      trigger: true
-    - get: bbl-github-release
-      trigger: true
-    - get: credhub-cli-github-release
-      trigger: true
-    - get: bosh-cli-github-release
-      trigger: true
-    - get: terraform-github-release
-      trigger: true
-    - get: cf-mysql-ci
-  - task: generate-docker-build-args-file
-    file: cf-mysql-ci/ci/tasks/generate-docker-build-args-file/task.yml
-  - put: cf-mysql-ci-image
-    params:
-      build: cf-mysql-dockerfile/scripts/
-      build_args_file: docker-build-args/docker-build-args.json
-
 - name: update-acceptance-tests
   plan:
   - aggregate:
