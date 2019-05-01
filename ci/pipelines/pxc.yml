@@ -64,6 +64,13 @@ resources:
     private_key: ((core-services-ci-credentials/Notes/git-writer-private-key))
     tag_filter: "v*.*.*"
 
+- name: mysql-load-test-release
+  type: git
+  source:
+    uri: https://github.com/pivotal/mysql-load-test-release.git
+    branch: validate-max-connections-161691709
+    private_key: ((core-services-ci-credentials/Notes/pcf-mysql-engine-reader-private-key))
+
 - name: last-pxc-release-bosh-release
   type: bosh-io-release
   source:
@@ -970,6 +977,60 @@ jobs:
       BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
       BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
       BOSH_DEPLOYMENT: pxc
+      INSTANCE: mysql/0
+  - do: *teardown-bosh-lite
+
+- name: test-max-connection-load
+  plan:
+  - aggregate:
+    - get: pxc-release
+      passed: [create-and-compile-release]
+    - get: cf-mysql-ci
+    - get: bosh-deployment
+      resource: bosh-deployment-repo
+    - get: deployments
+      resource: deployments-configuration
+    - get: stemcell
+      resource: xenial-bosh-lite-stemcell
+      passed: [create-and-compile-release]
+    - get: version
+      passed: [create-and-compile-release]
+      trigger: true
+    - get: cf-deployment
+      resource: cf-deployment-master
+    - get: cf-deployment-concourse-tasks
+    - get: cf-mysql-deployment
+    - get: compiled-release-tarball
+      resource: pxc-xenial-compiled-release
+      passed: [create-and-compile-release]
+    - get: bpm-release
+    - get: mysql-load-test-release
+  - do: *create-bosh-lite
+  - task: create-and-upload-mysql-load-test-release
+    file: cf-mysql-ci/ci/tasks/create-and-upload-release/task.yml
+    params:
+      BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
+      BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
+      BOSH_DEPLOYMENT: pxc
+      RELEASE_DIR: mysql-load-test-release
+  - put: pxc-bosh-deployment
+    params:
+      manifest: pxc-release/pxc-deployment.yml
+      releases:
+      - bpm-release/*.tgz
+      - compiled-release-tarball/*.tgz
+      stemcells:
+      - stemcell/*.tgz
+      source_file: bosh-lite-info/bosh-deployment-resource-source-file
+      ops_files: mysql-load-test-release/operations/add-validate-max-connections.yml
+  - task: validate-max-connections-errand
+    file: cf-mysql-ci/ci/tasks/run-errand/task.yml
+    params:
+      ERRAND: validate-max-connections
+      BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
+      BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
+      BOSH_DEPLOYMENT: pxc
+      PXC_DEPLOYMENT: pxc
       INSTANCE: mysql/0
   - do: *teardown-bosh-lite
 

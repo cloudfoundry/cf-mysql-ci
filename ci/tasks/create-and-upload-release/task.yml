@@ -1,0 +1,23 @@
+
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: cloudfoundry/cf-mysql-ci
+
+inputs:
+  - name: cf-mysql-ci
+  - name: bosh-lite-info
+
+params:
+  BOSH_CA_CERT_PATH: bosh-lite-info/ca-cert
+  BOSH_CLIENT: REPLACE-ME
+  BOSH_CLIENT_SECRET: REPLACE-ME
+  ENV_TARGET_FILE: bosh-lite-info/director-url
+  BOSH_DEPLOYMENT:
+  RELEASE_DIR:
+run:
+  path: cf-mysql-ci/ci/tasks/create-and-upload-release/task.sh
+
