@@ -1013,6 +1013,7 @@ jobs:
       BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
       BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
       BOSH_DEPLOYMENT: pxc
+      BOSH_CA_CERT_PATH: bosh-lite-info/ca-cert
       RELEASE_DIR: mysql-load-test-release
   - put: pxc-bosh-deployment
     params:

@@ -22,7 +22,7 @@ export BOSH_CLIENT
 BOSH_CLIENT_SECRET=${BOSH_CLIENT_SECRET:-"$(jq_val "bosh_password" "${ENV_METADATA}")"}
 export BOSH_CLIENT_SECRET
 
-BOSH_CA_CERT=${BOSH_CA_CERT_PATH:-"${ci_repo_dir}/${ENV_REPO}/$(jq_val "env" "${ENV_METADATA}")/certs/rootCA.pem"}
+BOSH_CA_CERT=`cat $BOSH_CA_CERT_PATH`
 export BOSH_CA_CERT
 
 BOSH_DEPLOYMENT=${BOSH_DEPLOYMENT:-"${DEPLOYMENT_NAME}"}
