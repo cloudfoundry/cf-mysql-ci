@@ -67,7 +67,7 @@ resources:
 - name: mysql-load-test-release
   type: git
   source:
-    uri: https://github.com/pivotal/mysql-load-test-release.git
+    uri: git@github.com:pivotal/mysql-load-test-release.git
     branch: validate-max-connections-161691709
     private_key: ((core-services-ci-credentials/Notes/pcf-mysql-engine-reader-private-key))
 
@@ -1005,6 +1005,7 @@ jobs:
       passed: [create-and-compile-release]
     - get: bpm-release
     - get: mysql-load-test-release
+      resource: mysql-load-test-release
   - do: *create-bosh-lite
   - task: create-and-upload-mysql-load-test-release
     file: cf-mysql-ci/ci/tasks/create-and-upload-release/task.yml
