@@ -25,4 +25,4 @@ export BOSH_DEPLOYMENT
 
 bosh -n delete-deployment
 
-bosh -n clean-up --all
+bosh -n clean-up
