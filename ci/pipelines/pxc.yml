@@ -68,7 +68,7 @@ resources:
   type: git
   source:
     uri: git@github.com:pivotal/mysql-load-test-release.git
-    branch: validate-max-connections-161691709
+    branch: master
     private_key: ((core-services-ci-credentials/Notes/pcf-mysql-engine-reader-private-key))
 
 - name: last-pxc-release-bosh-release
