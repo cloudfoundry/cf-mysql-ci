@@ -1024,7 +1024,9 @@ jobs:
       stemcells:
       - stemcell/*.tgz
       source_file: bosh-lite-info/bosh-deployment-resource-source-file
-      ops_files: mysql-load-test-release/operations/add-validate-max-connections.yml
+      ops_files:
+      - pxc-release/operations/use-clustered.yml
+      - mysql-load-test-release/operations/add-validate-max-connections.yml
   - task: validate-max-connections-errand
     file: cf-mysql-ci/ci/tasks/run-errand/task.yml
     params:
