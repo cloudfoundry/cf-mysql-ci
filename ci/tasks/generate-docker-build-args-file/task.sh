@@ -1,11 +1,23 @@
 #!/bin/bash
 set -eux
 
-BBL_GIT_TAG=`cat bbl-github-release/tag`
+if [[ -d "bbl-github-release" ]]; then
+  BBL_GIT_TAG=`cat bbl-github-release/tag`
+fi
+
 BBL6_GIT_TAG="v6.10.44"
-BOSH_CLI_VERSION=`cat bosh-cli-github-release/version`
-CREDHUB_CLI_VERSION=`cat credhub-cli-github-release/version`
-TERRAFORM_VERSION=`cat terraform-github-release/version | tr -d v`
+
+if [[ -d "bosh-cli-github-release" ]]; then
+  BOSH_CLI_VERSION=`cat bosh-cli-github-release/version`
+fi
+
+if [[ -d "credhub-cli-github-release" ]]; then
+  CREDHUB_CLI_VERSION=`cat credhub-cli-github-release/version`
+fi
+
+if [[ -d "terraform-github-release" ]]; then
+  TERRAFORM_VERSION=`cat terraform-github-release/version | tr -d v`
+fi
 
 cat << EOF > docker-build-args/docker-build-args.json
 {

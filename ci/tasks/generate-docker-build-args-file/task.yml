@@ -8,9 +8,13 @@ image_resource:
 
 inputs:
 - name: bbl-github-release
+  optional: true
 - name: bosh-cli-github-release
+  optional: true
 - name: credhub-cli-github-release
+  optional: true
 - name: terraform-github-release
+  optional: true
 - name: cf-mysql-ci
 
 outputs:
