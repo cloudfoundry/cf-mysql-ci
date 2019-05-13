@@ -52,4 +52,4 @@ mkdir -p $dir
 cp -R cf-acceptance-tests $dir
 cd $dir/cf-acceptance-tests
 
-./bin/test -nodes=4 -slowSpecThreshold=500 -noisySkippings=false
+./bin/test -nodes=4 -slowSpecThreshold=500 -noisySkippings=false -flakeAttempts=3
