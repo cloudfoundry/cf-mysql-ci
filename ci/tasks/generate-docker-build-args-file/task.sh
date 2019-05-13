@@ -1,5 +1,5 @@
 #!/bin/bash
-set -eux
+set -ex
 
 if [[ -d "bbl-github-release" ]]; then
   BBL_GIT_TAG=`cat bbl-github-release/tag`
