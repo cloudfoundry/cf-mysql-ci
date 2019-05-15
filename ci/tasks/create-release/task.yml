@@ -25,6 +25,7 @@ params:
   FINAL:
   RELEASE_NAME:
   SHA2:
+  GITHUB_SSH_KEY:
 
 run:
   path: cf-mysql-ci/ci/tasks/create-release/task.sh

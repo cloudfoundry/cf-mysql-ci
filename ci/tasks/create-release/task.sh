@@ -33,12 +33,28 @@ blobstore:
 EOF
 }
 
+function check_for_untested_commits() {
+    eval "$(ssh-agent -s)"
+    github_ssh_key=/tmp/git.rsa
+    echo "$GITHUB_SSH_KEY" > $github_ssh_key
+    chmod 0600 $github_ssh_key
+    ssh-add $github_ssh_key
+    pushd $release_repo
+        git fetch >/dev/null
+        if [[ -n $(git diff origin/master) ]]; then
+            echo "Untested commits still in the pipeline, exiting without cutting final..."
+            exit 1
+        fi
+    popd
+}
+
 create_release_command="bosh -n create-release --name ${RELEASE_NAME} --force"
 
 tarball_path="${tarball_dir}/${RELEASE_NAME}-dev.tgz"
 
 if [ -n "${FINAL}" ]; then
   create_release_command="${create_release_command} --final"
+  check_for_untested_commits
 else
   mkdir -p "${release_repo_modified}"
 fi

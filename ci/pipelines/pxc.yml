@@ -1173,6 +1173,7 @@ jobs:
         BOSH_SHA2: true
         AWS_ACCESS_KEY_ID: ((pxc-release-private.yml/Notes/access_key_id))
         AWS_SECRET_ACCESS_KEY: ((pxc-release-private.yml/Notes/secret_access_key))
+        GITHUB_SSH_KEY: ((core-services-ci-credentials/Notes/git-writer-private-key))
     - task: commit-final-release-changes
       file: cf-mysql-ci/ci/tasks/commit-github-release-changes/task.yml
       input_mapping: {github-release: pxc-release-final}
