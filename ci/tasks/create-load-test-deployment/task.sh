@@ -31,4 +31,5 @@ export BOSH_DEPLOYMENT
 pushd $RELEASE_DIR
     bosh create-release --force --timestamp-version
     bosh upload-release
+    ./scripts/deploy
 popd

@@ -1072,8 +1072,8 @@ jobs:
     - get: mysql-load-test-release
       resource: mysql-load-test-release
   - do: *create-bosh-lite
-  - task: create-and-upload-mysql-load-test-release
-    file: cf-mysql-ci/ci/tasks/create-and-upload-release/task.yml
+  - task: create-load-test-deployment
+    file: cf-mysql-ci/ci/tasks/create-load-test-deployment/task.yml
     params:
       BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
       BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
@@ -1101,6 +1101,63 @@ jobs:
       BOSH_DEPLOYMENT: pxc
       PXC_DEPLOYMENT: pxc
       INSTANCE: mysql/0
+  - do: *teardown-bosh-lite
+
+- name: test-availability
+  plan:
+  - aggregate:
+    - get: pxc-release
+      passed: [create-and-compile-release]
+    - get: cf-mysql-ci
+    - get: bosh-deployment
+      resource: bosh-deployment-repo
+    - get: deployments
+      resource: deployments-configuration
+    - get: stemcell
+      resource: xenial-bosh-lite-stemcell
+      passed: [create-and-compile-release]
+    - get: version
+      passed: [create-and-compile-release]
+      trigger: true
+    - get: cf-deployment
+      resource: cf-deployment-master
+    - get: cf-deployment-concourse-tasks
+    - get: cf-mysql-deployment
+    - get: compiled-release-tarball
+      resource: pxc-xenial-compiled-release
+      passed: [create-and-compile-release]
+    - get: bpm-release
+    - get: mysql-load-test-release
+      resource: mysql-load-test-release
+  - do: *create-bosh-lite
+  - task: create-load-test-deployment
+    file: cf-mysql-ci/ci/tasks/create-load-test-deployment/task.yml
+    params:
+      BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
+      BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
+      BOSH_DEPLOYMENT: pxc
+      BOSH_CA_CERT_PATH: bosh-lite-info/ca-cert
+      RELEASE_DIR: mysql-load-test-release
+
+  - put: pxc-bosh-deployment
+    params:
+      manifest: pxc-release/pxc-deployment.yml
+      releases:
+      - bpm-release/*.tgz
+      - compiled-release-tarball/*.tgz
+      stemcells:
+      - stemcell/*.tgz
+      source_file: bosh-lite-info/bosh-deployment-resource-source-file
+      ops_files:
+      - pxc-release/operations/use-clustered.yml
+      - pxc-release/operations/enable-shared-proxy-link-on-pxc.yml.yml
+  - task: validate-availability
+    file: cf-mysql-ci/ci/tasks/run-errand/task.yml
+    params:
+      ERRAND: test-availability
+      BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
+      BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
+      BOSH_DEPLOYMENT: load-test
   - do: *teardown-bosh-lite
 
 - name: test-trusty
