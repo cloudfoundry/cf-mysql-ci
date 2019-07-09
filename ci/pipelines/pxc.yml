@@ -1072,20 +1072,20 @@ jobs:
     - get: mysql-load-test-release
       resource: mysql-load-test-release
   - do: *create-bosh-lite
-  - task: create-load-test-deployment
-    file: cf-mysql-ci/ci/tasks/create-load-test-deployment/task.yml
+  - task: create-release
+    attempts: 3
+    file: cf-mysql-ci/ci/tasks/create-release/task.yml
+    input_mapping: {release-repo: mysql-load-test-release}
     params:
-      BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
-      BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
-      BOSH_DEPLOYMENT: pxc
-      BOSH_CA_CERT_PATH: bosh-lite-info/ca-cert
-      RELEASE_DIR: mysql-load-test-release
+      RELEASE_NAME: mysql-load-test
+      BOSH_SHA2: true
   - put: pxc-bosh-deployment
     params:
       manifest: pxc-release/pxc-deployment.yml
       releases:
       - bpm-release/*.tgz
       - compiled-release-tarball/*.tgz
+      - release-tarball/*.tgz
       stemcells:
       - stemcell/*.tgz
       source_file: bosh-lite-info/bosh-deployment-resource-source-file
