@@ -1130,15 +1130,6 @@ jobs:
     - get: mysql-load-test-release
       resource: mysql-load-test-release
   - do: *create-bosh-lite
-  - task: create-load-test-deployment
-    file: cf-mysql-ci/ci/tasks/create-load-test-deployment/task.yml
-    params:
-      BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
-      BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
-      BOSH_DEPLOYMENT: pxc
-      BOSH_CA_CERT_PATH: bosh-lite-info/ca-cert
-      RELEASE_DIR: mysql-load-test-release
-
   - put: pxc-bosh-deployment
     params:
       manifest: pxc-release/pxc-deployment.yml
@@ -1151,6 +1142,14 @@ jobs:
       ops_files:
       - pxc-release/operations/use-clustered.yml
       - pxc-release/operations/enable-shared-proxy-link-on-pxc.yml.yml
+  - task: create-load-test-deployment
+    file: cf-mysql-ci/ci/tasks/create-load-test-deployment/task.yml
+    params:
+      BOSH_CLIENT: ((core-services-ci-credentials/Notes/bosh-lite-username))
+      BOSH_CLIENT_SECRET: ((core-services-ci-credentials/Notes/bosh-lite-password))
+      BOSH_DEPLOYMENT: pxc
+      BOSH_CA_CERT_PATH: bosh-lite-info/ca-cert
+      RELEASE_DIR: mysql-load-test-release
   - task: validate-availability
     file: cf-mysql-ci/ci/tasks/run-errand/task.yml
     params:
