@@ -1,3 +1,5 @@
+DEPRECATED: cf-mysql-release is deprecated and this repo is no longer maintained.
+
 # cf-mysql-ci
 Contains Concourse CI scripts and configuration we use to test [cf-mysql-release](https://github.com/cloudfoundry/cf-mysql-release)
 
